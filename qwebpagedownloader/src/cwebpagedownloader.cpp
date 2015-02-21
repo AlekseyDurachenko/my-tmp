@@ -98,17 +98,6 @@ void CWebPageDownloader::webpage_loadFinished()
         if (e.isNull())
         {
             e = stack.pop();
-
-//            if (e.tagName().toLower() == "head" && !hasCodepage)
-//            {
-//                qDebug() << "meta!!!!!";
-//                QWebElement elem;
-//                elem.appendInside("<meta/>");
-//                //e.appendInside(elem);
-//                //e.prependOutside("meta");
-//                e.appendInside(elem.lastChild());
-//            }
-
             //qDebug() << QString().fill(' ', stack.count()) + "/" + e.tagName();
             e = e.nextSibling();
         }
@@ -170,6 +159,10 @@ void CWebPageDownloader::webpage_loadFinished()
             {
                 e.setAttribute("content", "text/html; charset=utf-8");
                 hasCodepage = true;
+            }
+            else if (e.tagName().toLower() == "a")
+            {
+                e.setAttribute("href", m_url.resolved(QUrl(e.attribute("href"))).toString());
             }
 
             stack.push(e);
