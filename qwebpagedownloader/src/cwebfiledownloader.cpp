@@ -126,6 +126,7 @@ void CWebFileDownloader::reply_finished()
     delete m_file;
     m_file = 0;
 
+    int statusCode = m_reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
 
     QVariant possibleRedirectUrl =
                  m_reply->attribute(QNetworkRequest::RedirectionTargetAttribute);
@@ -143,7 +144,14 @@ void CWebFileDownloader::reply_finished()
     }
     else
     {
-        qDebug() << "done!";
-        emit finished();
+        if (statusCode == 503)
+        {
+            start();
+        }
+        else
+        {
+            qDebug() << "done!";
+            emit finished();
+        }
     }
 }
