@@ -18,6 +18,7 @@
 #include <QObject>
 #include <QList>
 #include <QWebPage>
+#include <QHash>
 #include "cwebfiledownloader.h"
 
 
@@ -25,6 +26,13 @@ class CWebPageDownloader : public QObject
 {
     Q_OBJECT
 public:
+    enum Error {
+        NoError = 0,            // success
+        OperationCanceledError, // aborted by user before the finished()
+        FileSystemError,        // can't create file or directory
+        OtherError
+    };
+
     explicit CWebPageDownloader(QNetworkAccessManager *network, QObject *parent = 0);
     virtual ~CWebPageDownloader();
 
@@ -37,30 +45,39 @@ public:
 
     void start();
     void abort();
-    inline bool isStarted() const;
-    inline bool isAborted() const;
+
+    inline bool isRunning() const;
     inline bool isFinished() const;
+
+    inline Error error() const;
+    QString errorString() const;
 signals:
     void downloadProgress(qint64 total, qint64 count);
     void finished();
 public slots:
-    void pagedownloader_finished();
-    void resdownloader_finished();
-    void webpage_loadFinished();
+    void resource_finished();
+    void webpage_loadFinished(bool ok);
 private:
-    void processPage(const QByteArray &data);
+    QString addUrlToDownloader(const QString &urlstr, const QString &ext = QString());
+    void updateProgress();
 private:
     QNetworkAccessManager *m_network;
-    CWebFileDownloader *m_pageDownloader;
-    QList<CWebFileDownloader *> m_resDownloaders;
+    QWebPage *m_webPage;
+
+    QList<CWebFileDownloader *> m_resources;
+    QHash<QUrl, QString> m_existsResources; // for resource files deduplication
+    int m_totalResources;   // total count of the resource files
+    int m_fileSeqNumber;    // used for resource file names
+
     QUrl m_url;
     QString m_fileName;
-    QString m_resourcesPath;
-    bool m_isAborted;
-    bool m_isStarted;
+    QString m_resourcePath;
+
+    bool m_isRunning;
     bool m_isFinished;
-    QWebPage *m_webPage;
-    int m_fileId;
+
+    Error m_error;
+    QString m_errorString;
 };
 
 const QUrl &CWebPageDownloader::url() const
@@ -75,22 +92,22 @@ const QString &CWebPageDownloader::fileName() const
 
 const QString &CWebPageDownloader::resourcesPath() const
 {
-    return m_resourcesPath;
+    return m_resourcePath;
 }
 
-bool CWebPageDownloader::isStarted() const
+bool CWebPageDownloader::isRunning() const
 {
-    return m_isStarted;
-}
-
-bool CWebPageDownloader::isAborted() const
-{
-    return m_isAborted;
+    return m_isRunning;
 }
 
 bool CWebPageDownloader::isFinished() const
 {
     return m_isFinished;
+}
+
+CWebPageDownloader::Error CWebPageDownloader::error() const
+{
+    return m_error;
 }
 
 

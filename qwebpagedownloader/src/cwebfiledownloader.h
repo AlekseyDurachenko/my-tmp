@@ -34,11 +34,6 @@ public:
     inline const QString &fileName() const;
     void setFileName(const QString& fileName);
 
-    inline bool isSaveBuffer() const;
-    void setSaveBuffer(bool state);
-
-    inline const QByteArray &buffer() const;
-
     void start();
     void abort();
     inline bool isStarted() const;
@@ -56,8 +51,7 @@ private:
     QFile *m_file;
     QUrl m_url;
     QString m_fileName;
-    QByteArray m_buffer;
-    bool m_saveToBuffer;
+    int m_retryCount;
     bool m_isAborted;
     bool m_isStarted;
     bool m_isFinished;
@@ -71,16 +65,6 @@ const QUrl &CWebFileDownloader::url() const
 const QString &CWebFileDownloader::fileName() const
 {
     return m_fileName;
-}
-
-bool CWebFileDownloader::isSaveBuffer() const
-{
-    return m_saveToBuffer;
-}
-
-const QByteArray &CWebFileDownloader::buffer() const
-{
-    return m_buffer;
 }
 
 bool CWebFileDownloader::isStarted() const

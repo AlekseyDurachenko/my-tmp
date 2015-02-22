@@ -23,7 +23,7 @@ CWebFileDownloader::CWebFileDownloader(QNetworkAccessManager *network,
     m_network = network;
     m_reply = 0;
     m_file = 0;
-    m_saveToBuffer = false;
+    m_retryCount = 5;
     m_isAborted = false;
     m_isStarted = false;
     m_isFinished = false;
@@ -50,11 +50,6 @@ void CWebFileDownloader::setFileName(const QString &fileName)
     m_fileName = fileName;
 }
 
-void CWebFileDownloader::setSaveBuffer(bool state)
-{
-    m_saveToBuffer = state;
-}
-
 void CWebFileDownloader::start()
 {
     if (isStarted())
@@ -63,7 +58,6 @@ void CWebFileDownloader::start()
     m_isStarted = true;
     m_isAborted = false;
     m_isFinished = false;
-    m_buffer.clear();
 
     m_reply = m_network->get(QNetworkRequest(m_url));
     connect(m_reply, SIGNAL(downloadProgress(qint64,qint64)),
@@ -92,10 +86,6 @@ void CWebFileDownloader::reply_readyRead()
     }
 
     const QByteArray buffer = m_reply->readAll();
-    if (m_saveToBuffer)
-    {
-        m_buffer.append(buffer);
-    }
     if (!m_fileName.isEmpty())
     {
         m_file->write(buffer);
@@ -140,17 +130,18 @@ void CWebFileDownloader::reply_finished()
         setUrl(url);
         start();
 
-        qDebug() << "redirect" << url;
+        //qDebug() << "redirect" << url;
     }
     else
     {
-        if (statusCode == 503)
+        if (statusCode == 503 && m_retryCount != 0)
         {
+            --m_retryCount;
             start();
         }
         else
         {
-            qDebug() << "done!";
+            //qDebug() << "done!";
             emit finished();
         }
     }

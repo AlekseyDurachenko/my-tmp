@@ -17,7 +17,6 @@
 #include <QDebug>
 #include <QStack>
 #include <QWebElement>
-#include <QtWebKit>
 #include <QWebFrame>
 
 
@@ -25,17 +24,18 @@ CWebPageDownloader::CWebPageDownloader(QNetworkAccessManager *network,
         QObject *parent) : QObject(parent)
 {
     m_network = network;
-    m_pageDownloader = 0;
     m_webPage = 0;
-    m_isAborted = false;
-    m_isStarted = false;
+    m_fileSeqNumber = 0;
+    m_totalResources = 0;
+    m_error = NoError;
+
+    m_isRunning = false;
     m_isFinished = false;
-    m_fileId = 0;
 }
 
 CWebPageDownloader::~CWebPageDownloader()
 {
-    delete m_pageDownloader;
+    abort();
 }
 
 void CWebPageDownloader::setUrl(const QUrl &url)
@@ -46,122 +46,123 @@ void CWebPageDownloader::setUrl(const QUrl &url)
 void CWebPageDownloader::setFileName(const QString &fileName)
 {
     m_fileName = fileName;
-    m_resourcesPath = fileName + ".res";
+    m_resourcePath = fileName + ".res";
 }
 
 void CWebPageDownloader::start()
 {
-    if (isStarted())
+    if (isRunning())
         return;
 
-    m_isStarted = true;
-    m_isAborted = false;
+    if (!QDir().mkpath(resourcesPath()))
+    {
+        m_error = FileSystemError;
+        m_errorString = tr("can't create the destination directory");
+        return;
+    }
+
+    m_fileSeqNumber = 0;
+    m_totalResources = 0;
+    m_error = NoError;
+    m_existsResources.clear();
+    m_isRunning = true;
     m_isFinished = false;
-    m_resDownloaders.clear();
-    m_fileId = 0;
 
-    QDir().mkpath(resourcesPath());
+    // QWebPage is working normally only if we use setUrl() (codepage problems)
+    m_webPage = new QWebPage(this);
+    m_webPage->setNetworkAccessManager(m_network);
+    connect(m_webPage->mainFrame(), SIGNAL(loadFinished(bool)),
+            this, SLOT(webpage_loadFinished(bool)));
+    connect(m_webPage->mainFrame(), SIGNAL(loadFinished(bool)),
+            m_webPage, SLOT(deleteLater()));
+    m_webPage->mainFrame()->setUrl(m_url);
 
-    m_pageDownloader = new CWebFileDownloader(m_network, this);
-    m_pageDownloader->setFileName(QString());
-    m_pageDownloader->setUrl(m_url);
-    m_pageDownloader->setSaveBuffer(true);
-    connect(m_pageDownloader, SIGNAL(finished()),
-            this, SLOT(pagedownloader_finished()));
-    m_pageDownloader->start();
+    emit downloadProgress(0, 1);
 }
 
 void CWebPageDownloader::abort()
 {
+    if (!isRunning())
+        return;
+
+    if (m_webPage)
+        m_webPage->triggerAction(QWebPage::Stop);
+
+    foreach (CWebFileDownloader *downloader, m_resources)
+        downloader->abort();
+
+    m_error = OperationCanceledError;
+    m_isRunning = false;
 }
 
-void CWebPageDownloader::pagedownloader_finished()
+QString CWebPageDownloader::errorString() const
 {
-    processPage(m_pageDownloader->buffer());
+    switch (m_error)
+    {
+    case NoError:
+        return tr("success");
+    case OperationCanceledError:
+        return tr("operation aborted");
+    case FileSystemError:
+    case OtherError:
+        return m_errorString;
+    }
 
-    m_pageDownloader->deleteLater();
-    m_pageDownloader = 0;
+    return QString();
 }
 
-void CWebPageDownloader::resdownloader_finished()
+void CWebPageDownloader::resource_finished()
 {
+    m_resources.removeAll(qobject_cast<CWebFileDownloader *>(sender()));
+    updateProgress();
 }
 
-void CWebPageDownloader::webpage_loadFinished()
+void CWebPageDownloader::webpage_loadFinished(bool ok)
 {
-    bool hasCodepage = false;
-    QWebFrame *frame = m_webPage->mainFrame();
-    QWebElement e = frame->documentElement();
+    QWebFrame *webFrame = m_webPage->mainFrame();
+    m_webPage = 0;
+
+    if (ok == false)
+    {
+        m_error = OtherError;
+        m_errorString = tr("webkit: can't load the page");
+        updateProgress();
+        return;
+    }
+
     QStack<QWebElement> stack;
+    QWebElement e = webFrame->documentElement();
     while (!e.isNull() || !stack.isEmpty())
     {
         if (e.isNull())
         {
             e = stack.pop();
-            //qDebug() << QString().fill(' ', stack.count()) + "/" + e.tagName();
             e = e.nextSibling();
         }
         else
         {
-            //qDebug() << QString().fill(' ', stack.count()) + e.tagName();
             if (e.tagName().toLower() == "link"
                     && e.attribute("rel").toLower() == "stylesheet")
             {
-                QString href = e.attribute("href");
-                QUrl url = m_url.resolved(QUrl(href));
-                QString baseFileName = QString::number(++m_fileId) + ".css";
-                QString fileName = m_resourcesPath + QDir::separator() + baseFileName;
-                e.setAttribute("href", QFileInfo(m_resourcesPath).fileName() + QDir::separator() + baseFileName);
-
-                CWebFileDownloader *downloader = new CWebFileDownloader(m_network, this);
-                downloader->setFileName(fileName);
-                downloader->setUrl(url);
-                connect(downloader, SIGNAL(finished()),
-                        downloader, SLOT(deleteLater()));
-                downloader->start();
+                e.setAttribute("href", addUrlToDownloader(e.attribute("href"), ".css"));
             }
             else if (e.tagName().toLower() == "script")
             {
-                QString href = e.attribute("src");
-
-                QUrl url = m_url.resolved(QUrl(href));
-                QString baseFileName = QString::number(++m_fileId) + ".js";
-                QString fileName = m_resourcesPath + QDir::separator() + baseFileName;
-                e.setAttribute("src", QFileInfo(m_resourcesPath).fileName() + QDir::separator() + baseFileName);
-
-                CWebFileDownloader *downloader = new CWebFileDownloader(m_network, this);
-                downloader->setFileName(fileName);
-                downloader->setUrl(url);
-                connect(downloader, SIGNAL(finished()),
-                        downloader, SLOT(deleteLater()));
-                downloader->start();
+                e.setAttribute("src", addUrlToDownloader(e.attribute("src"), ".js"));
             }
             else if (e.tagName().toLower() == "img")
             {
-                QString href = e.attribute("src");
-
-                QUrl url = m_url.resolved(QUrl(href));
-                QString baseFileName = QString::number(++m_fileId) + ".img";
-                QString fileName = m_resourcesPath + QDir::separator() + baseFileName;
-                e.setAttribute("src", QFileInfo(m_resourcesPath).fileName() + QDir::separator() + baseFileName);
-
-                CWebFileDownloader *downloader = new CWebFileDownloader(m_network, this);
-                downloader->setFileName(fileName);
-                downloader->setUrl(url);
-                connect(downloader, SIGNAL(finished()),
-                        downloader, SLOT(deleteLater()));
-                downloader->start();
-
-                qDebug() << url;
+                e.setAttribute("src", addUrlToDownloader(e.attribute("src"), ".img"));
             }
             else if (e.tagName().toLower() == "meta"
                     && e.attribute("http-equiv").toLower() == "content-type")
             {
+                // we save the page as utf8
                 e.setAttribute("content", "text/html; charset=utf-8");
-                hasCodepage = true;
             }
             else if (e.tagName().toLower() == "a")
             {
+                // convert the relative links to the absolute links
                 e.setAttribute("href", m_url.resolved(QUrl(e.attribute("href"))).toString());
             }
 
@@ -170,26 +171,67 @@ void CWebPageDownloader::webpage_loadFinished()
         }
     }
 
-    if (!hasCodepage)
+    // add content type if not exists
+    if (webFrame->findAllElements("meta[http-equiv=content-type]").count() == 0)
     {
-        QWebElement elem = frame->findFirstElement("head");
-        elem.setInnerXml("<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" />" + elem.toInnerXml());
+        QWebElement head = webFrame->findFirstElement("head");
+        head.setInnerXml("<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\" />" + head.toInnerXml());
     }
 
+    // write the modified webpage
     QFile outputFile(m_fileName);
-    outputFile.open(QIODevice::WriteOnly);
-    outputFile.write(frame->toHtml().toUtf8());
-    //qDebug() << frame->toHtml();
+    if (!outputFile.open(QIODevice::WriteOnly))
+    {
+        m_error = FileSystemError;
+        m_errorString = outputFile.errorString();
+    }
+    QByteArray ba = webFrame->toHtml().toUtf8();
+    if (!outputFile.write(ba) != ba.size())
+    {
+        m_error = FileSystemError;
+        m_errorString = outputFile.errorString();
+    }
+
+    updateProgress();
 }
 
-void CWebPageDownloader::processPage(const QByteArray &data)
+QString CWebPageDownloader::addUrlToDownloader(const QString &urlstr, const QString &ext)
 {
-    m_webPage = new QWebPage(this);
-    QWebFrame *frame = m_webPage->mainFrame();
-    connect(frame, SIGNAL(loadFinished(bool)),
-            this, SLOT(webpage_loadFinished()));
-    //frame->setContent(data, "text/html; charset=windows-1251", m_url);
-    //frame->setHtml(QString::fromUtf8(data));
-    frame->setUrl(m_url);
-    //frame->setContent(data);
+    QUrl url = m_url.resolved(QUrl(urlstr));
+    if (!url.isValid())
+        return QString();
+
+    if (m_existsResources.contains(url))
+        return m_existsResources.value(url);
+
+    QString fileName = QString::number(++m_fileSeqNumber) + ext;
+    QString fullFileName = resourcesPath() + QDir::separator() + fileName;
+    QString relativeFileName = QFileInfo(m_resourcePath).fileName() + QDir::separator() + fileName;
+    m_existsResources.insert(url, relativeFileName);
+
+    CWebFileDownloader *downloader = new CWebFileDownloader(m_network, this);
+    connect(downloader, SIGNAL(finished()), this, SLOT(resource_finished()));
+    connect(downloader, SIGNAL(finished()), downloader, SLOT(deleteLater()));
+    downloader->setFileName(fullFileName);
+    downloader->setUrl(url);
+    downloader->start();
+    m_resources << downloader;
+    m_totalResources += 1;
+
+    return relativeFileName;
+}
+
+void CWebPageDownloader::updateProgress()
+{
+    if (m_totalResources == 0)
+        emit downloadProgress(1, 1);
+    else
+        emit downloadProgress(m_totalResources-m_resources.count(), m_totalResources);
+
+    if (m_resources.count() == 0)
+    {
+        m_isRunning = false;
+        m_isFinished = true;
+        emit finished();
+    }
 }
