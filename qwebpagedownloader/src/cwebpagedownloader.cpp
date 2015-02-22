@@ -204,6 +204,7 @@ QString CWebPageDownloader::addUrlToDownloader(const QString &urlstr, const QStr
     if (m_existsResources.contains(url))
         return m_existsResources.value(url);
 
+    // autodetect the extension
     QString extension = ext;
     if (extension.isEmpty())
     {
