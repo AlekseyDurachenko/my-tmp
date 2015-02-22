@@ -16,8 +16,10 @@ TEMPLATE = app
 SOURCES += \
     src/cwebfiledownloader.cpp \
     src/main.cpp \
-    src/cwebpagedownloader.cpp
+    src/cwebpagedownloader.cpp \
+    src/cwebpagescreenshot.cpp
 
 HEADERS += \
     src/cwebfiledownloader.h \
-    src/cwebpagedownloader.h
+    src/cwebpagedownloader.h \
+    src/cwebpagescreenshot.h
