@@ -152,7 +152,7 @@ void CWebPageDownloader::webpage_loadFinished(bool ok)
             }
             else if (e.tagName().toLower() == "img")
             {
-                e.setAttribute("src", addUrlToDownloader(e.attribute("src"), ".img"));
+                e.setAttribute("src", addUrlToDownloader(e.attribute("src")));
             }
             else if (e.tagName().toLower() == "meta"
                     && e.attribute("http-equiv").toLower() == "content-type")
@@ -204,7 +204,17 @@ QString CWebPageDownloader::addUrlToDownloader(const QString &urlstr, const QStr
     if (m_existsResources.contains(url))
         return m_existsResources.value(url);
 
-    QString fileName = QString::number(++m_fileSeqNumber) + ext;
+    QString extension = ext;
+    if (extension.isEmpty())
+    {
+        extension = urlstr.split("/").last().split(".").last();
+        if (extension == urlstr)
+            extension = QString();
+        else
+            extension = "." + extension;
+    }
+
+    QString fileName = QString::number(++m_fileSeqNumber) + extension;
     QString fullFileName = resourcesPath() + QDir::separator() + fileName;
     QString relativeFileName = QFileInfo(m_resourcePath).fileName() + QDir::separator() + fileName;
     m_existsResources.insert(url, relativeFileName);
