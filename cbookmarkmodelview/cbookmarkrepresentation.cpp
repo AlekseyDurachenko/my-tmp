@@ -54,7 +54,7 @@ void CBookmarkRepresentation::origin_changed(const QList<CBookmark> &bookmarks)
             if (m_bookmarks.at(i).id() == bookmark.id())
             {
                 m_bookmarks.replace(i, bookmark);
-                emit dataChanged(i, i);
+                emit changed(i, i);
             }
         }
     }

@@ -14,10 +14,17 @@ public:
     explicit CCoreFacade(QObject *parent = 0);
     virtual ~CCoreFacade();
 
-    CBookmarkRepresentation *createBookmarkRepresentation();
+    inline CBookmarkRepresentation *bookmarkRepresentation() const;
 private:
     QThread *m_coreThread;
     CBookmarkRepresentationOrigin *m_bookmarkRepresentationOrigin;
+    CBookmarkRepresentation *m_bookmarkRepresentation;
 };
+
+CBookmarkRepresentation *CCoreFacade::bookmarkRepresentation() const
+{
+    return m_bookmarkRepresentation;
+}
+
 
 #endif // CCOREFACADE_H

@@ -18,7 +18,7 @@ public:
 signals:
     void inserted(int first, int last);
     void removed(int first, int last);
-    void dataChanged(int first, int last);
+    void changed(int first, int last);
     void reseted();
 public slots:
     void origin_inserted(const CBookmark &bookmark);

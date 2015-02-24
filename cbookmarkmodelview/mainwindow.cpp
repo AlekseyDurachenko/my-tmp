@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     CCoreFacade *facade = new CCoreFacade(this);
-    CBookmarkRepresentation *bookmarkRep = facade->createBookmarkRepresentation();
+    CBookmarkRepresentation *bookmarkRep = facade->bookmarkRepresentation();
     CBookmarkItemModel *model = new CBookmarkItemModel(bookmarkRep, this);
     ui->treeView->setModel(model);
 }

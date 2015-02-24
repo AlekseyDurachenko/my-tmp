@@ -45,8 +45,8 @@ void CBookmarkItemModel::setBookmarkRepresentaion(CBookmarkRepresentation *bookm
                 this, SLOT(bookmark_inserted(int,int)));
         connect(m_bookmarkRepresentation, SIGNAL(removed(int,int)),
                 this, SLOT(bookmark_removed(int,int)));
-        connect(m_bookmarkRepresentation, SIGNAL(dataChanged(int,int)),
-                this, SLOT(bookmark_dataChanged(int,int)));
+        connect(m_bookmarkRepresentation, SIGNAL(changed(int,int)),
+                this, SLOT(bookmark_changed(int,int)));
     }
 
     endResetModel();
@@ -143,7 +143,7 @@ void CBookmarkItemModel::bookmark_removed(int first, int last)
     endRemoveRows();
 }
 
-void CBookmarkItemModel::bookmark_dataChanged(int first, int last)
+void CBookmarkItemModel::bookmark_changed(int first, int last)
 {
     emit dataChanged(createIndex(first, 0),
                      createIndex(last, columnCount()-1));
