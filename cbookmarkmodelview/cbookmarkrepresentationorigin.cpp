@@ -22,5 +22,5 @@ void CBookmarkRepresentationOrigin::timeout()
 
     qDebug() << "insert emited";
 
-    inserted(b1);
+    emit inserted(b1);
 }
