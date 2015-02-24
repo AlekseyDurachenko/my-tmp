@@ -14,9 +14,17 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    cbookmark.cpp
+    cbookmark.cpp \
+    cbookmarkrepresentationorigin.cpp \
+    cbookmarkrepresentation.cpp \
+    ccorefacade.cpp \
+    cbookmarkitemmodel.cpp
 
 HEADERS  += mainwindow.h \
-    cbookmark.h
+    cbookmark.h \
+    cbookmarkrepresentationorigin.h \
+    cbookmarkrepresentation.h \
+    ccorefacade.h \
+    cbookmarkitemmodel.h
 
 FORMS    += mainwindow.ui
