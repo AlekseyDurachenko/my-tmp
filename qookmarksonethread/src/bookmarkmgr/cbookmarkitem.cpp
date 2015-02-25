@@ -21,13 +21,18 @@ CBookmarkItem::~CBookmarkItem()
         tag->callbackBookmarkUnregistred(this);
 }
 
+int CBookmarkItem::index() const
+{
+    return m_mgr->bookmarkIndexOf(const_cast<CBookmarkItem *>(this));
+}
+
 void CBookmarkItem::setData(const CBookmark &data)
 {
     privateSetData(data);
     m_mgr->callbackBookmarkDataChanged(this);
 }
 
-void CBookmarkItem::setDataTags(const CBookmark &data,
+void CBookmarkItem::setData(const CBookmark &data,
         const QSet<CTagItem *> &tags)
 {
     privateSetData(data);
@@ -57,12 +62,6 @@ void CBookmarkItem::privateSetTags(const QSet<CTagItem *> &tags)
         tag->callbackBookmarkRegistred(this);
 
     m_tags = tags;
-}
-
-void CBookmarkItem::callbackTagChanged(CTagItem *tag)
-{
-    Q_UNUSED(tag);
-    m_mgr->callbackBookmarkDataChanged(this);
 }
 
 void CBookmarkItem::callbackTagDestroyed(CTagItem *tag)

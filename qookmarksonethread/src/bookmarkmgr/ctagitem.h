@@ -17,9 +17,8 @@ public:
     ~CTagItem();
 
     inline const CTagData &data() const;
-    void setTagData(const CTagData &data);
+    void setData(const CTagData &data);
 private:
-    void notifyBookmarksAboutChanges();
     void notifyBookmarksAboutDestroyed();
 private:
     void callbackBookmarkRegistred(CBookmarkItem *bookmark);
