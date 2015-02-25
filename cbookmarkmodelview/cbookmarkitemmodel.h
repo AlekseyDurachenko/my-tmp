@@ -40,7 +40,7 @@ private slots:
     void bookmark_inserted(int first, int last);
     void bookmark_removed(int first, int last);
     void bookmark_changed(int first, int last);
-    void bookmark_reset();
+    void bookmark_reseted();
     void bookmark_destroyed();
 private:
     CBookmarkRepresentation *m_bookmarkRepresentation;
