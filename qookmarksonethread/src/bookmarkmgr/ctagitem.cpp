@@ -1,3 +1,17 @@
+// Copyright 2014-2015, Durachenko Aleksey V. <durachenko.aleksey@gmail.com>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ctagitem.h"
 #include "cbookmarkitem.h"
 #include "cbookmarkmgr.h"
@@ -20,6 +34,12 @@ CTagItem::~CTagItem()
 {
     while (m_children.count())
         delete m_children.takeLast();
+
+    foreach (CBookmarkItem *item, m_bookmarks.values())
+    {
+        m_bookmarks.remove(item);
+        mgr()->callbackTagBookmarkRemoved(this, item);
+    }
 }
 
 void CTagItem::addChild(const CTag &data)
@@ -54,6 +74,30 @@ void CTagItem::removeAll()
         mgr()->callbackTagRemoved(this, item);
         delete item;
     }
+}
+
+QSet<CBookmarkItem *> CTagItem::bookmarks(bool recursive) const
+{
+    if (!recursive)
+        return m_bookmarks;
+
+    QSet<CBookmarkItem *> bookmarks = m_bookmarks;
+    foreach (CTagItem *item, m_children)
+        bookmarks += item->bookmarks(recursive);
+
+    return bookmarks;
+}
+
+void CTagItem::bookmarkAdd(CBookmarkItem *item)
+{
+    m_bookmarks.insert(item);
+    mgr()->callbackTagBookmarkInserted(this, item);
+}
+
+void CTagItem::bookmarkRemove(CBookmarkItem *item)
+{
+    m_bookmarks.remove(item);
+    mgr()->callbackTagBookmarkRemoved(this, item);
 }
 
 void CTagItem::setData(const CTag &data)

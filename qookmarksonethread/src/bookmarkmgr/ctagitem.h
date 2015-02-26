@@ -1,3 +1,17 @@
+// Copyright 2014-2015, Durachenko Aleksey V. <durachenko.aleksey@gmail.com>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef CTAGITEM_H
 #define CTAGITEM_H
 
@@ -29,6 +43,11 @@ public:
     void remove(CTagItem *item);
     void removeAll();
 
+    inline const QSet<CBookmarkItem *> &bookmarks() const;
+    QSet<CBookmarkItem *> bookmarks(bool recursive) const;
+    void bookmarkAdd(CBookmarkItem *item);
+    void bookmarkRemove(CBookmarkItem *item);
+
     inline const CTag &data() const;
     void setData(const CTag &data);
 private:
@@ -39,6 +58,7 @@ private:
     CBookmarkMgr *m_mgr;
     CTagItem *m_parent;
     QList<CTagItem *> m_children;
+    QSet<CBookmarkItem *> m_bookmarks;
     CTag m_data;
 };
 
@@ -83,6 +103,11 @@ CTagItem *CTagItem::findChild(const QString &name) const
 const QList<CTagItem *> &CTagItem::children() const
 {
     return m_children;
+}
+
+const QSet<CBookmarkItem *> &CTagItem::bookmarks() const
+{
+    return m_bookmarks;
 }
 
 const CTag &CTagItem::data() const

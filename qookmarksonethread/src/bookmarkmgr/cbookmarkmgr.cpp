@@ -1,3 +1,17 @@
+// Copyright 2014-2015, Durachenko Aleksey V. <durachenko.aleksey@gmail.com>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cbookmarkmgr.h"
 
 CBookmarkMgr::CBookmarkMgr(QObject *parent) : QObject(parent)
@@ -89,6 +103,7 @@ void CBookmarkMgr::bookmarkRemove(const QUrl &url)
 void CBookmarkMgr::bookmarkRemoveAt(int index)
 {
     CBookmarkItem *item = m_bookmarkItems.takeAt(index);
+    m_bookmarkTags.remove(item);
     emit bookmarkRemoved(item);
     delete item;
 }
@@ -98,9 +113,15 @@ void CBookmarkMgr::bookmarkRemoveAll()
     while (m_bookmarkItems.count())
     {
         CBookmarkItem *item = m_bookmarkItems.takeLast();
+        m_bookmarkTags.remove(item);
         emit bookmarkRemoved(item);
         delete item;
     }
+}
+
+QSet<CTagItem *> CBookmarkMgr::bookmarkTags(CBookmarkItem *item) const
+{
+    return m_bookmarkTags.value(item);
 }
 
 CTagItem *CBookmarkMgr::tagRootItem() const
@@ -132,4 +153,18 @@ void CBookmarkMgr::callbackTagMoved(CTagItem *oldParent, CTagItem *newParent,
 void CBookmarkMgr::callbackTagDataChanged(CTagItem *parent, CTagItem *item)
 {
     emit tagDataChanged(parent, item);
+}
+
+void CBookmarkMgr::callbackTagBookmarkInserted(CTagItem *tag, CBookmarkItem *bookmark)
+{
+    m_bookmarkTags[bookmark].insert(tag);
+    emit tagBookmarkChanged(tag);
+    emit bookmarkTagChanged(bookmark);
+}
+
+void CBookmarkMgr::callbackTagBookmarkRemoved(CTagItem *tag, CBookmarkItem *bookmark)
+{
+    m_bookmarkTags[bookmark].remove(tag);
+    emit tagBookmarkChanged(tag);
+    emit bookmarkTagChanged(bookmark);
 }

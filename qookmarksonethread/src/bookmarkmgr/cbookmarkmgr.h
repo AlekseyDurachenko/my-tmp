@@ -1,9 +1,24 @@
+// Copyright 2014-2015, Durachenko Aleksey V. <durachenko.aleksey@gmail.com>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef CBOOKMARKMGR_H
 #define CBOOKMARKMGR_H
 
 #include <QObject>
 #include "cbookmarkitem.h"
 #include "ctagitem.h"
+
 
 class CBookmarkMgr : public QObject
 {
@@ -27,6 +42,8 @@ public:
     void bookmarkRemoveAll();
 
     CTagItem *tagRootItem() const;
+
+    QSet<CTagItem *> bookmarkTags(CBookmarkItem *item) const;
 signals:
     void bookmarkInserted(CBookmarkItem *item);
     void bookmarkRemoved(CBookmarkItem *item);
@@ -36,14 +53,21 @@ signals:
     void tagRemoved(CTagItem *parent, CTagItem* item);
     void tagMoved(CTagItem *oldParent, CTagItem *newParent, CTagItem *item);
     void tagDataChanged(CTagItem *parent, CTagItem* item);
+
+    void bookmarkTagChanged(CBookmarkItem *item);
+    void tagBookmarkChanged(CTagItem *item);
 private:
     void callbackBookmarkDataChanged(CBookmarkItem *item);
     void callbackTagInserted(CTagItem *parent, CTagItem *item);
     void callbackTagRemoved(CTagItem *parent, CTagItem *item);
     void callbackTagMoved(CTagItem *oldParent, CTagItem *newParent, CTagItem *item);
     void callbackTagDataChanged(CTagItem *parent, CTagItem *item);
+
+    void callbackTagBookmarkInserted(CTagItem *tag, CBookmarkItem *bookmark);
+    void callbackTagBookmarkRemoved(CTagItem *tag, CBookmarkItem *bookmark);
 private:
     QList<CBookmarkItem *> m_bookmarkItems;
+    QHash<CBookmarkItem *, QSet<CTagItem *> > m_bookmarkTags;
     CTagItem *m_tagRootItem;
 };
 
