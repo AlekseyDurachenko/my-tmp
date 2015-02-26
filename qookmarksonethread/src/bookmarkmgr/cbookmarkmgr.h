@@ -40,6 +40,7 @@ public:
     void bookmarkRemove(const QUrl &url);
     void bookmarkRemoveAt(int index);           // need??
     void bookmarkRemoveAll();
+    const QList<CBookmarkItem *> &bookmarks() const;
 
     CTagItem *tagRootItem() const;
 signals:

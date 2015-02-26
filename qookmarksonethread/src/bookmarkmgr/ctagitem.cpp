@@ -52,11 +52,12 @@ CTagItem *CTagItem::findChild(const QStringList &path) const
     return current;
 }
 
-void CTagItem::addChild(const CTag &data)
+CTagItem *CTagItem::addChild(const CTag &data)
 {
     CTagItem *item = new CTagItem(data, mgr(), this);
     m_children.push_back(item);
     mgr()->callbackTagInserted(this, item);
+    return item;
 }
 
 void CTagItem::moveTo(CTagItem *newParent)

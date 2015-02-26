@@ -30,6 +30,7 @@ DEFINES        +=                                           \
 
 INCLUDEPATH    +=                                           \
     $$PWD/src                                               \
+    $$PWD/src/bookmarkmgr                                   \
 
 HEADERS        +=                                           \
     src/mainwindow.h \

@@ -39,7 +39,7 @@ public:
     inline CTagItem *findChild(const QString &name) const;
     CTagItem *findChild(const QStringList &path) const;
     inline const QList<CTagItem *> &children() const;
-    void addChild(const CTag &data);
+    CTagItem *addChild(const CTag &data);
     void moveTo(CTagItem *newParent);
     void remove(CTagItem *item);
     void removeAll();

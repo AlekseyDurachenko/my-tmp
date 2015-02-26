@@ -117,6 +117,11 @@ void CBookmarkMgr::bookmarkRemoveAll()
     }
 }
 
+const QList<CBookmarkItem *> &CBookmarkMgr::bookmarks() const
+{
+    return m_bookmarkItems;
+}
+
 CTagItem *CBookmarkMgr::tagRootItem() const
 {
     return m_tagRootItem;
