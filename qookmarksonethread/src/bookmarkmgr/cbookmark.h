@@ -25,6 +25,9 @@ public:
 
     inline const QString &name() const;
     void setName(const QString &name);
+
+    inline bool operator ==(const CBookmark &other);
+    inline bool operator !=(const CBookmark &other);
 private:
     QSharedDataPointer<CBookmarkData> data;
 };
@@ -37,6 +40,16 @@ const QUrl &CBookmark::url() const
 const QString &CBookmark::name() const
 {
     return data->name;
+}
+
+bool CBookmark::operator ==(const CBookmark &other)
+{
+    return (data->url == other.data->url);
+}
+
+bool CBookmark::operator !=(const CBookmark &other)
+{
+    return (data->url != other.data->url);
 }
 
 #endif // CBOOKMARK_H

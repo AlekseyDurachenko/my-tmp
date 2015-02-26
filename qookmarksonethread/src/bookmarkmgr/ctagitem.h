@@ -13,9 +13,8 @@ class CTagItem
 
     CTagItem(CBookmarkMgr *mgr, CTagItem *parent = 0);
     CTagItem(const CTag &data, CBookmarkMgr *mgr, CTagItem *parent = 0);
-public:
     ~CTagItem();
-
+public:
     inline CBookmarkMgr *mgr() const;
     inline CTagItem *parent() const;
     inline int index() const;
@@ -25,6 +24,10 @@ public:
     inline CTagItem *child(int index) const;
     inline CTagItem *findChild(const QString &name) const;
     inline const QList<CTagItem *> &children() const;
+    void addChild(const CTag &data);
+    void moveTo(CTagItem *newParent);
+    void remove(CTagItem *item);
+    void removeAll();
 
     inline const CTag &data() const;
     void setData(const CTag &data);
@@ -32,18 +35,11 @@ private:
     void setParent(CTagItem *parent);
     void addChild(CTagItem *item);
     CTagItem *takeChild(CTagItem *item);
-    CTagItem *takeChild(int index);
-private:
-    void notifyBookmarksAboutDestroyed();
-private:
-    void callbackBookmarkRegistred(CBookmarkItem *bookmark);
-    void callbackBookmarkUnregistred(CBookmarkItem *bookmark);
 private:
     CBookmarkMgr *m_mgr;
     CTagItem *m_parent;
-    CTag m_data;
-    QSet<CBookmarkItem *> m_bookmarks;
     QList<CTagItem *> m_children;
+    CTag m_data;
 };
 
 CBookmarkMgr *CTagItem::mgr() const

@@ -19,17 +19,14 @@ public:
     int bookmarkIndexOf(const QUrl &url) const;     // need??
     CBookmarkItem *bookmarkAt(int index) const;
     CBookmarkItem *bookmarkFind(const QUrl &url) const;
-    CBookmarkItem *bookmarkAdd(const CBookmark &data, const QSet<CTagItem *> &tags = QSet<CTagItem *>());
+    CBookmarkItem *bookmarkAdd(const CBookmark &data);
+    CBookmarkItem *bookmarkAddOrReplace(const CBookmark &data);
     void bookmarkRemove(CBookmarkItem *item);   // need??
     void bookmarkRemove(const QUrl &url);
     void bookmarkRemoveAt(int index);           // need??
     void bookmarkRemoveAll();
 
     CTagItem *tagRootItem() const;
-    CTagItem *tagAdd(CTagItem *parent, const CTag &data);
-    void tagMove(CTagItem *newParent, CTagItem *item);
-    void tagRemove(CTagItem *item);
-    void tagRemoveAll();
 signals:
     void bookmarkInserted(CBookmarkItem *item);
     void bookmarkRemoved(CBookmarkItem *item);
@@ -41,6 +38,9 @@ signals:
     void tagDataChanged(CTagItem *parent, CTagItem* item);
 private:
     void callbackBookmarkDataChanged(CBookmarkItem *item);
+    void callbackTagInserted(CTagItem *parent, CTagItem *item);
+    void callbackTagRemoved(CTagItem *parent, CTagItem *item);
+    void callbackTagMoved(CTagItem *oldParent, CTagItem *newParent, CTagItem *item);
     void callbackTagDataChanged(CTagItem *parent, CTagItem *item);
 private:
     QList<CBookmarkItem *> m_bookmarkItems;
