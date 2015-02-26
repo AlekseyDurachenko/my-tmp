@@ -42,6 +42,16 @@ CTagItem::~CTagItem()
     }
 }
 
+CTagItem *CTagItem::findChild(const QStringList &path) const
+{
+    QStringList tmp = path;
+    CTagItem *current = const_cast<CTagItem *>(this);
+    while (!tmp.isEmpty() && current)
+        current = current->findChild(tmp.takeFirst());
+
+    return current;
+}
+
 void CTagItem::addChild(const CTag &data)
 {
     CTagItem *item = new CTagItem(data, mgr(), this);
@@ -90,12 +100,18 @@ QSet<CBookmarkItem *> CTagItem::bookmarks(bool recursive) const
 
 void CTagItem::bookmarkAdd(CBookmarkItem *item)
 {
+    if (m_bookmarks.contains(item))
+        return;
+
     m_bookmarks.insert(item);
     item->callbackTagRegistred(this);
 }
 
 void CTagItem::bookmarkRemove(CBookmarkItem *item)
 {
+    if (!m_bookmarks.contains(item))
+        return;
+
     m_bookmarks.remove(item);
     item->callbackTagUnregistred(this);
 }

@@ -37,6 +37,7 @@ public:
     inline int indexOfChild(CTagItem *item) const;
     inline CTagItem *child(int index) const;
     inline CTagItem *findChild(const QString &name) const;
+    CTagItem *findChild(const QStringList &path) const;
     inline const QList<CTagItem *> &children() const;
     void addChild(const CTag &data);
     void moveTo(CTagItem *newParent);

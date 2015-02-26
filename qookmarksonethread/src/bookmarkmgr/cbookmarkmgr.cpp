@@ -145,6 +145,9 @@ void CBookmarkMgr::callbackTagRemoved(CTagItem *parent, CTagItem *item)
 void CBookmarkMgr::callbackTagMoved(CTagItem *oldParent, CTagItem *newParent,
         CTagItem *item)
 {
+    foreach (CBookmarkItem *tmp, item->bookmarks(true))
+        emit bookmarkTagsChanged(tmp);
+
     emit tagMoved(oldParent, newParent, item);
 }
 
