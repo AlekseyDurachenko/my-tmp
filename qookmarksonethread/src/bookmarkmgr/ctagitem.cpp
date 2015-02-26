@@ -60,6 +60,19 @@ CTagItem *CTagItem::addChild(const CTag &data)
     return item;
 }
 
+QStringList CTagItem::path() const
+{
+    QStringList tmpPath;
+    CTagItem *tmpItem = const_cast<CTagItem *>(this);
+    while (tmpItem->parent())
+    {
+        tmpPath.push_front(tmpItem->data().name());
+        tmpItem = tmpItem->parent();
+    }
+
+    return tmpPath;
+}
+
 void CTagItem::moveTo(CTagItem *newParent)
 {
     CTagItem *oldParent = parent();

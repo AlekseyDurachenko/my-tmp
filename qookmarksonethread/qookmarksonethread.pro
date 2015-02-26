@@ -24,13 +24,14 @@ MOC_DIR         = build/release_moc
 UI_DIR          = build/release_ui
 RCC_DIR         = build/release_rcc
 
-#include($$PWD/libs/qt-json/qt-json.pri)
+include($$PWD/submodules/qt-json/qt-json.pri)
 
 DEFINES        +=                                           \
 
 INCLUDEPATH    +=                                           \
     $$PWD/src                                               \
     $$PWD/src/bookmarkmgr                                   \
+    $$PWD/src/bookmarkimport                                \
 
 HEADERS        +=                                           \
     src/mainwindow.h \
@@ -38,7 +39,8 @@ HEADERS        +=                                           \
     src/bookmarkmgr/cbookmarkitem.h \
     src/bookmarkmgr/cbookmarkmgr.h \
     src/bookmarkmgr/ctagitem.h \
-    src/bookmarkmgr/ctag.h
+    src/bookmarkmgr/ctag.h \
+    src/bookmarkimport/bookmarkimportchromium.h
 
 SOURCES        +=                                           \
     src/mainwindow.cpp \
@@ -46,7 +48,8 @@ SOURCES        +=                                           \
     src/bookmarkmgr/cbookmarkitem.cpp \
     src/bookmarkmgr/cbookmarkmgr.cpp \
     src/bookmarkmgr/ctagitem.cpp \
-    src/bookmarkmgr/ctag.cpp
+    src/bookmarkmgr/ctag.cpp \
+    src/bookmarkimport/bookmarkimportchromium.cpp
 
 FORMS          +=                                           \
     src/mainwindow.ui

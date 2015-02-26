@@ -1,9 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QDebug>
 #include "cbookmarkmgr.h"
-#include <QStack>
-#include <QStringList>
+#include <QDebug>
+#include "bookmarkimportchromium.h"
+#include <QDir>
+
 
 void printTagItem(const QString &path, CTagItem *item)
 {
@@ -21,38 +22,24 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     CBookmarkMgr *bookmarkMgr = new CBookmarkMgr(this);
-    CTag tag1;
-    tag1.setName("name_1");
-    CTag tag2;
-    tag2.setName("name_2");
-    CTag tag3;
-    tag3.setName("name_3");
-    CTag tag4;
-    tag4.setName("name_4");
-    CTagItem *t1 = bookmarkMgr->tagRootItem()->addChild(tag1);
-    CTagItem *t2 = bookmarkMgr->tagRootItem()->addChild(tag2)->addChild(tag3);
-    CTagItem *t3 = bookmarkMgr->tagRootItem()->addChild(tag4);
+//    CBookmark _b1;
+//    _b1.setUrl(QUrl("ru.ru"));
+//    CBookmarkItem *b1 = bookmarkMgr->bookmarkAdd(_b1);
 
+//    CTag _t1;
+//    _t1.setName("unnamed");
+//    CTagItem *t1 = bookmarkMgr->tagRootItem()->addChild(_t1);
 
-    CBookmark b1;
-    b1.setUrl(QUrl("a1.ru"));
-    CBookmark b2;
-    b2.setUrl(QUrl("a2.ru"));
-    CBookmark b3;
-    b3.setUrl(QUrl("a3.ru"));
-    bookmarkMgr->bookmarkAdd(b1);
-    bookmarkMgr->bookmarkAdd(b2);
-    bookmarkMgr->bookmarkAdd(b3);
+//    t1->bookmarkAdd(b1);
+//    t1->bookmarkAdd(b1);
+    bookmarkImportChromium(bookmarkMgr, QDir::homePath() + "/.config/chromium/Default/Bookmarks");
 
-    t1->bookmarkAdd(bookmarkMgr->bookmarkAt(0));
-    t2->bookmarkAdd(bookmarkMgr->bookmarkAt(0));
-    t3->bookmarkAdd(bookmarkMgr->bookmarkAt(0));
 
     foreach (CBookmarkItem *item, bookmarkMgr->bookmarks())
     {
         qDebug() << item->data().url();
         foreach (CTagItem *tag, item->tags())
-            qDebug() << "TAG: " << tag->data().name();
+            qDebug() << "TAG: " << tag->path();
     }
 
     printTagItem("", bookmarkMgr->tagRootItem());
