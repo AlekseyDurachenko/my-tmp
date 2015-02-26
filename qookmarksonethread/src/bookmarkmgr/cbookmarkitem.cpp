@@ -30,6 +30,7 @@ CBookmarkItem::CBookmarkItem(const CBookmark &data, CBookmarkMgr *mgr)
 
 CBookmarkItem::~CBookmarkItem()
 {
+    notifyTagsAboutDestroyed();
 }
 
 int CBookmarkItem::index() const
@@ -48,4 +49,28 @@ void CBookmarkItem::setData(const CBookmark &data)
 
     m_data = data;
     m_mgr->callbackBookmarkDataChanged(this);
+}
+
+void CBookmarkItem::notifyTagsAboutDestroyed()
+{
+    foreach (CTagItem *item, m_tags)
+        item->callbackBookmarkDestroyed(this);
+}
+
+void CBookmarkItem::callbackTagRegistred(CTagItem *tag)
+{
+    if (m_tags.contains(tag))
+        return;
+
+    m_tags.insert(tag);
+    mgr()->callbackBookmarkTagsChanged(this);
+}
+
+void CBookmarkItem::callbackTagUnregistred(CTagItem *tag)
+{
+    if (!m_tags.contains(tag))
+        return;
+
+    m_tags.remove(tag);
+    mgr()->callbackBookmarkTagsChanged(this);
 }

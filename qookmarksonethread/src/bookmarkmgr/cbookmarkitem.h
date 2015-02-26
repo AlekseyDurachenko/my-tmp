@@ -34,8 +34,16 @@ public:
 
     inline const CBookmark &data() const;
     void setData(const CBookmark &data);
+
+    inline const QSet<CTagItem *> &tags() const;
+private:
+    void notifyTagsAboutDestroyed();
+private:
+    void callbackTagRegistred(CTagItem *tag);
+    void callbackTagUnregistred(CTagItem *tag);
 private:
     CBookmarkMgr *m_mgr;
+    QSet<CTagItem *> m_tags;
     CBookmark m_data;
 };
 
@@ -47,6 +55,11 @@ CBookmarkMgr *CBookmarkItem::mgr() const
 const CBookmark &CBookmarkItem::data() const
 {
     return m_data;
+}
+
+const QSet<CTagItem *> &CBookmarkItem::tags() const
+{
+    return m_tags;
 }
 
 

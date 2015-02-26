@@ -103,7 +103,6 @@ void CBookmarkMgr::bookmarkRemove(const QUrl &url)
 void CBookmarkMgr::bookmarkRemoveAt(int index)
 {
     CBookmarkItem *item = m_bookmarkItems.takeAt(index);
-    m_bookmarkTags.remove(item);
     emit bookmarkRemoved(item);
     delete item;
 }
@@ -113,15 +112,9 @@ void CBookmarkMgr::bookmarkRemoveAll()
     while (m_bookmarkItems.count())
     {
         CBookmarkItem *item = m_bookmarkItems.takeLast();
-        m_bookmarkTags.remove(item);
         emit bookmarkRemoved(item);
         delete item;
     }
-}
-
-QSet<CTagItem *> CBookmarkMgr::bookmarkTags(CBookmarkItem *item) const
-{
-    return m_bookmarkTags.value(item);
 }
 
 CTagItem *CBookmarkMgr::tagRootItem() const
@@ -132,6 +125,11 @@ CTagItem *CBookmarkMgr::tagRootItem() const
 void CBookmarkMgr::callbackBookmarkDataChanged(CBookmarkItem *item)
 {
     emit bookmarkDataChanged(item);
+}
+
+void CBookmarkMgr::callbackBookmarkTagsChanged(CBookmarkItem *item)
+{
+    emit bookmarkTagsChanged(item);
 }
 
 void CBookmarkMgr::callbackTagInserted(CTagItem *parent, CTagItem *item)
@@ -153,18 +151,4 @@ void CBookmarkMgr::callbackTagMoved(CTagItem *oldParent, CTagItem *newParent,
 void CBookmarkMgr::callbackTagDataChanged(CTagItem *parent, CTagItem *item)
 {
     emit tagDataChanged(parent, item);
-}
-
-void CBookmarkMgr::callbackTagBookmarkInserted(CTagItem *tag, CBookmarkItem *bookmark)
-{
-    m_bookmarkTags[bookmark].insert(tag);
-    emit tagBookmarkChanged(tag);
-    emit bookmarkTagChanged(bookmark);
-}
-
-void CBookmarkMgr::callbackTagBookmarkRemoved(CTagItem *tag, CBookmarkItem *bookmark)
-{
-    m_bookmarkTags[bookmark].remove(tag);
-    emit tagBookmarkChanged(tag);
-    emit bookmarkTagChanged(bookmark);
 }

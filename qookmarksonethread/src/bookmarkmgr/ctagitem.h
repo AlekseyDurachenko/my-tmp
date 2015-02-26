@@ -55,6 +55,8 @@ private:
     void addChild(CTagItem *item);
     CTagItem *takeChild(CTagItem *item);
 private:
+    void callbackBookmarkDestroyed(CBookmarkItem *bookmark);
+private:
     CBookmarkMgr *m_mgr;
     CTagItem *m_parent;
     QList<CTagItem *> m_children;

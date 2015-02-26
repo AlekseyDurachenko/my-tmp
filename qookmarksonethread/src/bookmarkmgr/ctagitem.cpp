@@ -38,7 +38,7 @@ CTagItem::~CTagItem()
     foreach (CBookmarkItem *item, m_bookmarks.values())
     {
         m_bookmarks.remove(item);
-        mgr()->callbackTagBookmarkRemoved(this, item);
+        item->callbackTagUnregistred(this);
     }
 }
 
@@ -91,13 +91,13 @@ QSet<CBookmarkItem *> CTagItem::bookmarks(bool recursive) const
 void CTagItem::bookmarkAdd(CBookmarkItem *item)
 {
     m_bookmarks.insert(item);
-    mgr()->callbackTagBookmarkInserted(this, item);
+    item->callbackTagRegistred(this);
 }
 
 void CTagItem::bookmarkRemove(CBookmarkItem *item)
 {
     m_bookmarks.remove(item);
-    mgr()->callbackTagBookmarkRemoved(this, item);
+    item->callbackTagUnregistred(this);
 }
 
 void CTagItem::setData(const CTag &data)
@@ -122,4 +122,9 @@ CTagItem *CTagItem::takeChild(CTagItem *item)
     m_children.removeAll(item);
     item->setParent(0);
     return item;
+}
+
+void CTagItem::callbackBookmarkDestroyed(CBookmarkItem *bookmark)
+{
+    m_bookmarks.remove(bookmark);
 }

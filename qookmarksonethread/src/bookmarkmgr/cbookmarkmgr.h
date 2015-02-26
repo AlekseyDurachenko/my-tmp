@@ -42,32 +42,25 @@ public:
     void bookmarkRemoveAll();
 
     CTagItem *tagRootItem() const;
-
-    QSet<CTagItem *> bookmarkTags(CBookmarkItem *item) const;
 signals:
     void bookmarkInserted(CBookmarkItem *item);
     void bookmarkRemoved(CBookmarkItem *item);
     void bookmarkDataChanged(CBookmarkItem *item);
+    void bookmarkTagsChanged(CBookmarkItem *item);
 
     void tagInserted(CTagItem *parent, CTagItem* item);
     void tagRemoved(CTagItem *parent, CTagItem* item);
     void tagMoved(CTagItem *oldParent, CTagItem *newParent, CTagItem *item);
     void tagDataChanged(CTagItem *parent, CTagItem* item);
-
-    void bookmarkTagChanged(CBookmarkItem *item);
-    void tagBookmarkChanged(CTagItem *item);
 private:
     void callbackBookmarkDataChanged(CBookmarkItem *item);
+    void callbackBookmarkTagsChanged(CBookmarkItem *item);
     void callbackTagInserted(CTagItem *parent, CTagItem *item);
     void callbackTagRemoved(CTagItem *parent, CTagItem *item);
     void callbackTagMoved(CTagItem *oldParent, CTagItem *newParent, CTagItem *item);
     void callbackTagDataChanged(CTagItem *parent, CTagItem *item);
-
-    void callbackTagBookmarkInserted(CTagItem *tag, CBookmarkItem *bookmark);
-    void callbackTagBookmarkRemoved(CTagItem *tag, CBookmarkItem *bookmark);
 private:
     QList<CBookmarkItem *> m_bookmarkItems;
-    QHash<CBookmarkItem *, QSet<CTagItem *> > m_bookmarkTags;
     CTagItem *m_tagRootItem;
 };
 
