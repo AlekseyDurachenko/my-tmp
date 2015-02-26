@@ -85,3 +85,8 @@ void CBookmarkMgr::callbackBookmarkDataChanged(CBookmarkItem *item)
 {
     emit bookmarkDataChanged(item);
 }
+
+void CBookmarkMgr::callbackTagDataChanged(CTagItem *parent, CTagItem *tag)
+{
+    emit tagDataChanged(parent, tag);
+}

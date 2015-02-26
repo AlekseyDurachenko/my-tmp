@@ -37,8 +37,7 @@ HEADERS        +=                                           \
     src/bookmarkmgr/cbookmarkitem.h \
     src/bookmarkmgr/cbookmarkmgr.h \
     src/bookmarkmgr/ctagdata.h \
-    src/bookmarkmgr/ctagitem.h \
-    src/bookmarkmgr/ctagmgr.h
+    src/bookmarkmgr/ctagitem.h
 
 SOURCES        +=                                           \
     src/mainwindow.cpp \
@@ -46,8 +45,7 @@ SOURCES        +=                                           \
     src/bookmarkmgr/cbookmarkitem.cpp \
     src/bookmarkmgr/cbookmarkmgr.cpp \
     src/bookmarkmgr/ctagdata.cpp \
-    src/bookmarkmgr/ctagitem.cpp \
-    src/bookmarkmgr/ctagmgr.cpp
+    src/bookmarkmgr/ctagitem.cpp
 
 FORMS          +=                                           \
     src/mainwindow.ui

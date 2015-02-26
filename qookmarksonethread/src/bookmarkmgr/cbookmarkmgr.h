@@ -3,14 +3,16 @@
 
 #include <QObject>
 #include "cbookmarkitem.h"
+#include "ctagitem.h"
 
 class CBookmarkMgr : public QObject
 {
     Q_OBJECT
     friend class CBookmarkItem;
+    friend class CTagItem;
 public:
     explicit CBookmarkMgr(QObject *parent = 0);
-    ~CBookmarkMgr();
+    virtual ~CBookmarkMgr();
 
     int bookmarkCount() const;
     int bookmarkIndexOf(CBookmarkItem *item) const; // need??
@@ -26,8 +28,13 @@ signals:
     void bookmarkInserted(CBookmarkItem *item);
     void bookmarkRemoved(CBookmarkItem *item);
     void bookmarkDataChanged(CBookmarkItem *item);
+
+    void tagInserted(CTagItem *parent, CTagItem* tag);
+    void tagRemoved(CTagItem *parent, CTagItem* tag);
+    void tagDataChanged(CTagItem *parent, CTagItem* tag);
 private:
     void callbackBookmarkDataChanged(CBookmarkItem *item);
+    void callbackTagDataChanged(CTagItem *parent, CTagItem *tag);
 private:
     QList<CBookmarkItem *> m_bookmarkItems;
 };
