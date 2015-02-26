@@ -24,19 +24,27 @@ public:
     void bookmarkRemove(const QUrl &url);
     void bookmarkRemoveAt(int index);           // need??
     void bookmarkRemoveAll();
+
+    CTagItem *tagRootItem() const;
+    CTagItem *tagAdd(CTagItem *parent, const CTag &data);
+    void tagMove(CTagItem *newParent, CTagItem *item);
+    void tagRemove(CTagItem *item);
+    void tagRemoveAll();
 signals:
     void bookmarkInserted(CBookmarkItem *item);
     void bookmarkRemoved(CBookmarkItem *item);
     void bookmarkDataChanged(CBookmarkItem *item);
 
-    void tagInserted(CTagItem *parent, CTagItem* tag);
-    void tagRemoved(CTagItem *parent, CTagItem* tag);
-    void tagDataChanged(CTagItem *parent, CTagItem* tag);
+    void tagInserted(CTagItem *parent, CTagItem* item);
+    void tagRemoved(CTagItem *parent, CTagItem* item);
+    void tagMoved(CTagItem *oldParent, CTagItem *newParent, CTagItem *item);
+    void tagDataChanged(CTagItem *parent, CTagItem* item);
 private:
     void callbackBookmarkDataChanged(CBookmarkItem *item);
-    void callbackTagDataChanged(CTagItem *parent, CTagItem *tag);
+    void callbackTagDataChanged(CTagItem *parent, CTagItem *item);
 private:
     QList<CBookmarkItem *> m_bookmarkItems;
+    CTagItem *m_tagRootItem;
 };
 
 

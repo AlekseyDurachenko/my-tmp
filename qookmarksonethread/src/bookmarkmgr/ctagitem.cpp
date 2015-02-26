@@ -9,7 +9,7 @@ CTagItem::CTagItem(CBookmarkMgr *mgr, CTagItem *parent)
     m_parent = parent;
 }
 
-CTagItem::CTagItem(const CTagData &data, CBookmarkMgr *mgr, CTagItem *parent)
+CTagItem::CTagItem(const CTag &data, CBookmarkMgr *mgr, CTagItem *parent)
 {
     m_data = data;
     m_mgr = mgr;
@@ -24,7 +24,7 @@ CTagItem::~CTagItem()
     notifyBookmarksAboutDestroyed();
 }
 
-void CTagItem::setData(const CTagData &data)
+void CTagItem::setData(const CTag &data)
 {
     m_data = data;
     m_mgr->callbackTagDataChanged(m_parent, this);

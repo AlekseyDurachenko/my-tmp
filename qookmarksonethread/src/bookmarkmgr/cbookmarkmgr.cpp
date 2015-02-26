@@ -2,11 +2,13 @@
 
 CBookmarkMgr::CBookmarkMgr(QObject *parent) : QObject(parent)
 {
+    m_tagRootItem = new CTagItem(this);
 }
 
 CBookmarkMgr::~CBookmarkMgr()
 {
     qDeleteAll(m_bookmarkItems);
+    delete m_tagRootItem;
 }
 
 int CBookmarkMgr::bookmarkCount() const
@@ -81,12 +83,44 @@ void CBookmarkMgr::bookmarkRemoveAll()
     }
 }
 
+CTagItem *CBookmarkMgr::tagRootItem() const
+{
+    return m_tagRootItem;
+}
+
+CTagItem *CBookmarkMgr::tagAdd(CTagItem *parent, const CTag &data)
+{
+    CTagItem *item = new CTagItem(data, this);
+    parent->addChild(item);
+    emit tagInserted(parent, item);
+    return item;
+}
+
+void CBookmarkMgr::tagMove(CTagItem *newParent, CTagItem *item)
+{
+    CTagItem *oldParent = item->parent();
+    newParent->addChild(oldParent->takeChild(item));
+    emit tagMoved(oldParent, newParent, item);
+}
+
+void CBookmarkMgr::tagRemove(CTagItem *item)
+{
+    CTagItem *parent = item->parent();
+    parent->takeChild(item);
+    emit tagRemoved(parent, item);
+    delete item;
+}
+
+void CBookmarkMgr::tagRemoveAll()
+{
+}
+
 void CBookmarkMgr::callbackBookmarkDataChanged(CBookmarkItem *item)
 {
     emit bookmarkDataChanged(item);
 }
 
-void CBookmarkMgr::callbackTagDataChanged(CTagItem *parent, CTagItem *tag)
+void CBookmarkMgr::callbackTagDataChanged(CTagItem *parent, CTagItem *item)
 {
-    emit tagDataChanged(parent, tag);
+    emit tagDataChanged(parent, item);
 }

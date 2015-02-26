@@ -2,7 +2,7 @@
 #define CTAGITEM_H
 
 #include <QSet>
-#include "ctagdata.h"
+#include "ctag.h"
 
 class CBookmarkItem;
 class CBookmarkMgr;
@@ -12,7 +12,7 @@ class CTagItem
     friend class CBookmarkItem;
 
     CTagItem(CBookmarkMgr *mgr, CTagItem *parent = 0);
-    CTagItem(const CTagData &data, CBookmarkMgr *mgr, CTagItem *parent = 0);
+    CTagItem(const CTag &data, CBookmarkMgr *mgr, CTagItem *parent = 0);
 public:
     ~CTagItem();
 
@@ -26,8 +26,8 @@ public:
     inline CTagItem *findChild(const QString &name) const;
     inline const QList<CTagItem *> &children() const;
 
-    inline const CTagData &data() const;
-    void setData(const CTagData &data);
+    inline const CTag &data() const;
+    void setData(const CTag &data);
 private:
     void setParent(CTagItem *parent);
     void addChild(CTagItem *item);
@@ -41,7 +41,7 @@ private:
 private:
     CBookmarkMgr *m_mgr;
     CTagItem *m_parent;
-    CTagData m_data;
+    CTag m_data;
     QSet<CBookmarkItem *> m_bookmarks;
     QList<CTagItem *> m_children;
 };
@@ -89,7 +89,7 @@ const QList<CTagItem *> &CTagItem::children() const
     return m_children;
 }
 
-const CTagData &CTagItem::data() const
+const CTag &CTagItem::data() const
 {
     return m_data;
 }
