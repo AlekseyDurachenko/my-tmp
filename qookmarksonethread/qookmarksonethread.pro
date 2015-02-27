@@ -32,6 +32,8 @@ INCLUDEPATH    +=                                           \
     $$PWD/src                                               \
     $$PWD/src/bookmarkmgr                                   \
     $$PWD/src/bookmarkimport                                \
+    $$PWD/src/tagitemmodel                                  \
+
 
 HEADERS        +=                                           \
     src/mainwindow.h \
@@ -40,7 +42,8 @@ HEADERS        +=                                           \
     src/bookmarkmgr/cbookmarkmgr.h \
     src/bookmarkmgr/ctagitem.h \
     src/bookmarkmgr/ctag.h \
-    src/bookmarkimport/bookmarkimportchromium.h
+    src/bookmarkimport/bookmarkimportchromium.h \
+    src/tagitemmodel/ctagitemmodel.h
 
 SOURCES        +=                                           \
     src/mainwindow.cpp \
@@ -49,7 +52,8 @@ SOURCES        +=                                           \
     src/bookmarkmgr/cbookmarkmgr.cpp \
     src/bookmarkmgr/ctagitem.cpp \
     src/bookmarkmgr/ctag.cpp \
-    src/bookmarkimport/bookmarkimportchromium.cpp
+    src/bookmarkimport/bookmarkimportchromium.cpp \
+    src/tagitemmodel/ctagitemmodel.cpp
 
 FORMS          +=                                           \
     src/mainwindow.ui

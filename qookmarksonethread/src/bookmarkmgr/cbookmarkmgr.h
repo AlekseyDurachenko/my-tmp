@@ -49,17 +49,17 @@ signals:
     void bookmarkDataChanged(CBookmarkItem *item);
     void bookmarkTagsChanged(CBookmarkItem *item);
 
-    void tagInserted(CTagItem *parent, CTagItem* item);
-    void tagRemoved(CTagItem *parent, CTagItem* item);
-    void tagMoved(CTagItem *oldParent, CTagItem *newParent, CTagItem *item);
-    void tagDataChanged(CTagItem *parent, CTagItem* item);
+    void tagInserted(CTagItem *parent, int index);
+    void tagRemoved(CTagItem *parent, int index);
+    void tagMoved(CTagItem *oldParent, int oldIndex, CTagItem *newParent, int newIndex);
+    void tagDataChanged(CTagItem *parent, int index);
 private:
     void callbackBookmarkDataChanged(CBookmarkItem *item);
     void callbackBookmarkTagsChanged(CBookmarkItem *item);
-    void callbackTagInserted(CTagItem *parent, CTagItem *item);
-    void callbackTagRemoved(CTagItem *parent, CTagItem *item);
-    void callbackTagMoved(CTagItem *oldParent, CTagItem *newParent, CTagItem *item);
-    void callbackTagDataChanged(CTagItem *parent, CTagItem *item);
+    void callbackTagInserted(CTagItem *parent, int index);
+    void callbackTagRemoved(CTagItem *parent, int index);
+    void callbackTagMoved(CTagItem *oldParent, int oldIndex, CTagItem *newParent, int newIndex);
+    void callbackTagDataChanged(CTagItem *parent, int index);
 private:
     QList<CBookmarkItem *> m_bookmarkItems;
     CTagItem *m_tagRootItem;

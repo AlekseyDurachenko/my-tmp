@@ -4,6 +4,7 @@
 #include <QDebug>
 #include "bookmarkimportchromium.h"
 #include <QDir>
+#include "ctagitemmodel.h"
 
 
 void printTagItem(const QString &path, CTagItem *item)
@@ -35,16 +36,17 @@ MainWindow::MainWindow(QWidget *parent) :
     bookmarkImportChromium(bookmarkMgr, QDir::homePath() + "/.config/chromium/Default/Bookmarks");
 
 
-    foreach (CBookmarkItem *item, bookmarkMgr->bookmarks())
-    {
-        qDebug() << item->data().url();
-        foreach (CTagItem *tag, item->tags())
-            qDebug() << "TAG: " << tag->path();
-    }
+//    foreach (CBookmarkItem *item, bookmarkMgr->bookmarks())
+//    {
+//        qDebug() << item->data().url();
+//        foreach (CTagItem *tag, item->tags())
+//            qDebug() << "TAG: " << tag->path();
+//    }
 
-    printTagItem("", bookmarkMgr->tagRootItem());
+//    printTagItem("", bookmarkMgr->tagRootItem());
 
-    exit(0);
+    CTagItemModel *model = new CTagItemModel(bookmarkMgr->tagRootItem(), this);
+    ui->tag_treeView->setModel(model);
 }
 
 MainWindow::~MainWindow()

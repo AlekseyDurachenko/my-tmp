@@ -79,7 +79,10 @@ CTagItem *CTagItem::parent() const
 
 int CTagItem::index() const
 {
-    return m_parent->indexOfChild(const_cast<CTagItem *>(this));
+    if (m_parent)
+        return m_parent->indexOfChild(const_cast<CTagItem *>(this));
+
+    return 0;
 }
 
 int CTagItem::childCount()

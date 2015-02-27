@@ -137,26 +137,26 @@ void CBookmarkMgr::callbackBookmarkTagsChanged(CBookmarkItem *item)
     emit bookmarkTagsChanged(item);
 }
 
-void CBookmarkMgr::callbackTagInserted(CTagItem *parent, CTagItem *item)
+void CBookmarkMgr::callbackTagInserted(CTagItem *parent, int index)
 {
-    emit tagInserted(parent, item);
+    emit tagInserted(parent, index);
 }
 
-void CBookmarkMgr::callbackTagRemoved(CTagItem *parent, CTagItem *item)
+void CBookmarkMgr::callbackTagRemoved(CTagItem *parent, int index)
 {
-    emit tagRemoved(parent, item);
+    emit tagRemoved(parent, index);
 }
 
-void CBookmarkMgr::callbackTagMoved(CTagItem *oldParent, CTagItem *newParent,
-        CTagItem *item)
+void CBookmarkMgr::callbackTagMoved(CTagItem *oldParent, int oldIndex,
+        CTagItem *newParent, int newIndex)
 {
-    foreach (CBookmarkItem *tmp, item->bookmarks(true))
+    foreach (CBookmarkItem *tmp, newParent->child(newIndex)->bookmarks(true))
         emit bookmarkTagsChanged(tmp);
 
-    emit tagMoved(oldParent, newParent, item);
+    emit tagMoved(oldParent, oldIndex, newParent, newIndex);
 }
 
-void CBookmarkMgr::callbackTagDataChanged(CTagItem *parent, CTagItem *item)
+void CBookmarkMgr::callbackTagDataChanged(CTagItem *parent, int index)
 {
-    emit tagDataChanged(parent, item);
+    emit tagDataChanged(parent, index);
 }

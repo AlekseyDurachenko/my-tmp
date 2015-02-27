@@ -56,7 +56,7 @@ CTagItem *CTagItem::addChild(const CTag &data)
 {
     CTagItem *item = new CTagItem(data, mgr(), this);
     m_children.push_back(item);
-    mgr()->callbackTagInserted(this, item);
+    mgr()->callbackTagInserted(this, item->index());
     return item;
 }
 
@@ -90,16 +90,18 @@ void CTagItem::moveTo(CTagItem *newParent)
         return;
 
     CTagItem *oldParent = parent();
+    int oldIndex = index();
     CTagItem *item = oldParent->takeChild(this);
     newParent->addChild(item);
-    mgr()->callbackTagMoved(oldParent, newParent, item);
+    mgr()->callbackTagMoved(oldParent, oldIndex, newParent, item->index());
 }
 
 void CTagItem::remove(CTagItem *item)
 {
     item->removeAll();
+    int index = item->index();
     m_children.removeAll(item);
-    mgr()->callbackTagRemoved(this, item);
+    mgr()->callbackTagRemoved(this, index);
     delete item;
 }
 
@@ -109,7 +111,8 @@ void CTagItem::removeAll()
     {
         m_children.last()->removeAll();
         CTagItem *item = m_children.takeLast();
-        mgr()->callbackTagRemoved(this, item);
+        int index = m_children.count();
+        mgr()->callbackTagRemoved(this, index);
         delete item;
     }
 }
@@ -147,7 +150,7 @@ void CTagItem::bookmarkRemove(CBookmarkItem *item)
 void CTagItem::setData(const CTag &data)
 {
     m_data = data;
-    mgr()->callbackTagDataChanged(parent(), this);
+    mgr()->callbackTagDataChanged(parent(), this->index());
 }
 
 void CTagItem::setParent(CTagItem *parent)
