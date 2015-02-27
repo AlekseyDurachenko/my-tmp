@@ -73,8 +73,22 @@ QStringList CTagItem::path() const
     return tmpPath;
 }
 
+bool CTagItem::contains(CTagItem *item) const
+{
+    while (item)
+    {
+        if (item == this)
+            return true;
+        item = item->parent();
+    }
+    return false;
+}
+
 void CTagItem::moveTo(CTagItem *newParent)
 {
+    if (contains(newParent))
+        return;
+
     CTagItem *oldParent = parent();
     CTagItem *item = oldParent->takeChild(this);
     newParent->addChild(item);

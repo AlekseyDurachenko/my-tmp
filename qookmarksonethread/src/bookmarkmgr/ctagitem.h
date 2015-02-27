@@ -41,6 +41,7 @@ public:
     inline const QList<CTagItem *> &children() const;
     CTagItem *addChild(const CTag &data);
     QStringList path() const;
+    bool contains(CTagItem *item) const;
     void moveTo(CTagItem *newParent);
     void remove(CTagItem *item);
     void removeAll();
