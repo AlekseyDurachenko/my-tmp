@@ -15,10 +15,10 @@
 #ifndef BOOKMARKIMPORTCHROMIUM_H
 #define BOOKMARKIMPORTCHROMIUM_H
 
-#include "cbookmarkmgr.h"
+#include "cmgr.h"
 
 
-bool bookmarkImportChromium(CBookmarkMgr *bookmarkMgr, const QString &fileName,
+bool bookmarkImportChromium(CMgr *bookmarkMgr, const QString &fileName,
         QString *reason = 0);
 
 

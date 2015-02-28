@@ -5,16 +5,17 @@
 #include "bookmarkimportchromium.h"
 #include <QDir>
 #include "ctagitemmodel.h"
+#include "cmgr.h"
 
 
-//void printTagItem(const QString &path, CTagItem *item)
-//{
-//    foreach (CTagItem *tmp, item->children())
-//    {
-//        qDebug() << path + tmp->data().name();
-//        printTagItem(path + tmp->data().name() + " >> ", tmp);
-//    }
-//}
+void printTagItem(const QString &path, CTagItem *item)
+{
+    foreach (CTagItem *tmp, item->children())
+    {
+        qDebug() << path + tmp->data().name() << "(" << tmp->bookmarks().count() << ")";
+        printTagItem(path + tmp->data().name() + " >> ", tmp);
+    }
+}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -79,6 +80,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //CTagItemModel *model = new CTagItemModel(bookmarkMgr->tagRootItem(), this);
     //ui->tag_treeView->setModel(model);
+
+    CMgr *mgr = new CMgr(this);
+    bookmarkImportChromium(mgr, QDir::homePath() + "/.config/chromium/Default/Bookmarks");
+
+    foreach (CBookmarkItem *item, mgr->bookmarkMgr()->bookmarks())
+    {
+        qDebug() << item->data().url();
+        foreach (CTagItem *tag, item->tags())
+            qDebug() << "TAG: " << tag->path();
+    }
+
+    printTagItem("", mgr->tagMgr()->rootItem());
 }
 
 MainWindow::~MainWindow()

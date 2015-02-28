@@ -42,7 +42,7 @@ HEADERS        +=                                           \
     src/bookmarkmgr/cbookmarkmgr.h \
     src/bookmarkmgr/ctagitem.h \
     src/bookmarkmgr/ctag.h \
-    #src/bookmarkimport/bookmarkimportchromium.h \
+    src/bookmarkimport/bookmarkimportchromium.h \
     #src/tagitemmodel/ctagitemmodel.h
     src/bookmarkmgr/cmgr.h \
     src/bookmarkmgr/ctagmgr.h
@@ -54,7 +54,7 @@ SOURCES        +=                                           \
     src/bookmarkmgr/cbookmarkmgr.cpp \
     src/bookmarkmgr/ctagitem.cpp \
     src/bookmarkmgr/ctag.cpp \
-    #src/bookmarkimport/bookmarkimportchromium.cpp \
+    src/bookmarkimport/bookmarkimportchromium.cpp \
     #src/tagitemmodel/ctagitemmodel.cpp
     src/bookmarkmgr/cmgr.cpp \
     src/bookmarkmgr/ctagmgr.cpp

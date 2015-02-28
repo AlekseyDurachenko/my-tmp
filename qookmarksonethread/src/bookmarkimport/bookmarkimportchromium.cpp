@@ -17,36 +17,34 @@
 #include <QFile>
 
 
-static void addUrl(CBookmarkMgr *bookmarkMgr, CTagItem *parent,
-        const QVariantMap &map)
+static void addUrl(CMgr *mgr, CTagItem *parent, const QVariantMap &map)
 {
     CBookmark data;
     data.setTitle(map.value("name").toString());
     data.setUrl(map.value("url").toString());
 
-    CBookmarkItem *bookmark = bookmarkMgr->bookmarkFind(data.url());
+    CBookmarkItem *bookmark = mgr->bookmarkMgr()->find(data.url());
     if (!bookmark)
-        bookmark = bookmarkMgr->bookmarkAdd(data);
+        bookmark = mgr->bookmarkMgr()->add(data);
 
-    if (parent != bookmarkMgr->tagRootItem())
+    if (parent != mgr->tagMgr()->rootItem())
         parent->bookmarkAdd(bookmark);
 }
 
 
 static CTagItem *findOrAddTag(CTagItem *parent, const QVariantMap &map)
 {
-    CTagItem *item = parent->findChild(map.value("name").toString());
+    CTagItem *item = parent->find(map.value("name").toString());
     if (item)
         return item;
 
     CTag data;
     data.setName(map.value("name").toString());
-    return parent->addChild(data);
+    return parent->add(data);
 }
 
 
-static void parseFolder(CBookmarkMgr *bookmarkMgr, CTagItem *parent,
-        const QVariantMap &map)
+static void parseFolder(CMgr *mgr, CTagItem *parent, const QVariantMap &map)
 {
     foreach (QVariant val, map.value("children").toList())
     {
@@ -54,14 +52,14 @@ static void parseFolder(CBookmarkMgr *bookmarkMgr, CTagItem *parent,
 
         QString type = map.value("type").toString();
         if (type == "url")
-            addUrl(bookmarkMgr, parent, map);
+            addUrl(mgr, parent, map);
         else if (type == "folder")
-            parseFolder(bookmarkMgr, findOrAddTag(parent, map), map);
+            parseFolder(mgr, findOrAddTag(parent, map), map);
     }
 }
 
 
-bool bookmarkImportChromium(CBookmarkMgr *bookmarkMgr, const QString &fileName,
+bool bookmarkImportChromium(CMgr *mgr, const QString &fileName,
         QString *reason)
 {
     try
@@ -79,7 +77,7 @@ bool bookmarkImportChromium(CBookmarkMgr *bookmarkMgr, const QString &fileName,
         if (!root.isValid())
             throw QObject::tr("can't parse the chromium bookmark file");
 
-        parseFolder(bookmarkMgr, bookmarkMgr->tagRootItem(), root.toMap());
+        parseFolder(mgr, mgr->tagMgr()->rootItem(), root.toMap());
     }
     catch (const QString &error)
     {
