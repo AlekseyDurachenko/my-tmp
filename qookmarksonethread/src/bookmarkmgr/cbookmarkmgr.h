@@ -45,9 +45,9 @@ public:
     void removeAt(int index);
     void removeAll();
 signals:
-    void aboutToInserted(int first, int last);
+    void aboutToBeInserted(int first, int last);
     void inserted(int first, int last);
-    void aboutToRemoved(int first, int last);
+    void aboutToBeRemoved(int first, int last);
     void removed(int first, int last);
     void dataChanged(CBookmarkItem *item);
     void tagsChanged(CBookmarkItem *item);

@@ -35,26 +35,28 @@ public:
     inline CTagItem *rootItem() const;
     CTagItem *findByPath(const QStringList &path) const;
 signals:
-    void aboutToInserted(CTagItem *parent ,int first, int last);
+    void aboutToBeInserted(CTagItem *parent ,int first, int last);
     void inserted(CTagItem *parent, int first, int last);
-    void aboutToRemoved(CTagItem *parent, int first, int last);
+    void aboutToBeRemoved(CTagItem *parent, int first, int last);
     void removed(CTagItem *parent, int first, int last);
-    void aboutToMoved(CTagItem *sourceParent, int sourceFirst, int sourceLast,
-                      CTagItem *destinationParent, int destinationIndex);
+    void aboutToBeMoved(CTagItem *sourceParent, int sourceFirst, int sourceLast,
+                        CTagItem *destinationParent, int destinationIndex);
     void moved(CTagItem *sourceParent, int sourceFirst, int sourceLast,
                CTagItem *destinationParent, int destinationIndex);
     void dataChanged(CTagItem *item);
     void bookmarksChanged(CTagItem *item);
 private:
-    void callbackAboutToInserted(CTagItem *parent ,int first, int last);
+    void callbackAboutToBeInserted(CTagItem *parent ,int first, int last);
     void callbackInserted(CTagItem *parent, int first, int last);
-    void callbackAboutToRemoved(CTagItem *parent, int first, int last);
+    void callbackAboutToBeRemoved(CTagItem *parent, int first, int last);
     void callbackRemoved(CTagItem *parent, int first, int last);
-    void callbackAboutToMoved(CTagItem *sourceParent, int sourceFirst,
-                              int sourceLast, CTagItem *destinationParent,
-                              int destinationIndex);
+    void callbackAboutToBeMoved(CTagItem *item);
+    void callbackAboutToBeMoved(CTagItem *sourceParent, int sourceFirst,
+                                int sourceLast, CTagItem *destinationParent,
+                                int destinationIndex);
     void callbackMoved(CTagItem *sourceParent, int sourceFirst, int sourceLast,
                        CTagItem *destinationParent, int destinationIndex);
+    void callbackMoved(CTagItem *item);
     void callbackDataChanged(CTagItem *item);
     void callbackBookmarksChanged(CTagItem *item);
 private:

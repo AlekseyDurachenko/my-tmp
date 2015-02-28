@@ -36,9 +36,9 @@ CTagItem *CTagMgr::findByPath(const QStringList &path) const
     return item;
 }
 
-void CTagMgr::callbackAboutToInserted(CTagItem *parent, int first, int last)
+void CTagMgr::callbackAboutToBeInserted(CTagItem *parent, int first, int last)
 {
-    emit aboutToInserted(parent, first, last);
+    emit aboutToBeInserted(parent, first, last);
 }
 
 void CTagMgr::callbackInserted(CTagItem *parent, int first, int last)
@@ -46,9 +46,9 @@ void CTagMgr::callbackInserted(CTagItem *parent, int first, int last)
     emit inserted(parent, first, last);
 }
 
-void CTagMgr::callbackAboutToRemoved(CTagItem *parent, int first, int last)
+void CTagMgr::callbackAboutToBeRemoved(CTagItem *parent, int first, int last)
 {
-    emit aboutToRemoved(parent, first, last);
+    emit aboutToBeRemoved(parent, first, last);
 }
 
 void CTagMgr::callbackRemoved(CTagItem *parent, int first, int last)
@@ -56,18 +56,29 @@ void CTagMgr::callbackRemoved(CTagItem *parent, int first, int last)
     emit removed(parent, first, last);
 }
 
-void CTagMgr::callbackAboutToMoved(CTagItem *sourceParent, int sourceFirst,
+void CTagMgr::callbackAboutToBeMoved(CTagItem *item)
+{
+    Q_UNUSED(item);
+}
+
+void CTagMgr::callbackAboutToBeMoved(CTagItem *sourceParent, int sourceFirst,
         int sourceLast, CTagItem *destinationParent, int destinationIndex)
 {
-    emit aboutToMoved(sourceParent, sourceFirst, sourceLast,
+    emit aboutToBeMoved(sourceParent, sourceFirst, sourceLast,
                       destinationParent, destinationIndex);
 }
 
 void CTagMgr::callbackMoved(CTagItem *sourceParent, int sourceFirst,
         int sourceLast, CTagItem *destinationParent, int destinationIndex)
 {
-    emit aboutToMoved(sourceParent, sourceFirst, sourceLast,
+    emit aboutToBeMoved(sourceParent, sourceFirst, sourceLast,
                       destinationParent, destinationIndex);
+}
+
+void CTagMgr::callbackMoved(CTagItem *item)
+{
+    foreach (CBookmarkItem *bookmark, item->bookmarksRecursively())
+        m_mgr->bookmarkMgr()->callbackTagsChanged(bookmark);
 }
 
 void CTagMgr::callbackDataChanged(CTagItem *item)

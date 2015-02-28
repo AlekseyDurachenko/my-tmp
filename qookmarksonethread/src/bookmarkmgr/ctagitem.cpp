@@ -108,7 +108,7 @@ CTagItem *CTagItem::add(const CTag &data)
     CTagItem *item = new CTagItem(data, m_tagMgr, this);
     int index = m_children.count();
 
-    m_tagMgr->callbackAboutToInserted(m_parent, index, index);
+    m_tagMgr->callbackAboutToBeInserted(m_parent, index, index);
     m_children.push_back(item);
     m_tagMgr->inserted(m_parent, index, index);
 
@@ -127,7 +127,7 @@ CTagItem *CTagItem::replace(const CTag &data)
         item = new CTagItem(data, m_tagMgr, this);
         int index = m_children.count();
 
-        m_tagMgr->callbackAboutToInserted(m_parent, index, index);
+        m_tagMgr->callbackAboutToBeInserted(m_parent, index, index);
         m_children.push_back(item);
         m_tagMgr->inserted(m_parent, index, index);
     }
@@ -136,7 +136,7 @@ CTagItem *CTagItem::replace(const CTag &data)
 
 void CTagItem::removeAt(int index)
 {
-    m_tagMgr->callbackAboutToRemoved(m_parent, index, index);
+    m_tagMgr->callbackAboutToBeRemoved(m_parent, index, index);
     delete m_children.takeAt(index);
     m_tagMgr->removed(m_parent, index, index);
 }
@@ -148,7 +148,7 @@ void CTagItem::removeAll()
 
     int last = m_children.count() - 1;
 
-    m_tagMgr->aboutToRemoved(m_parent, 0, last);
+    m_tagMgr->aboutToBeRemoved(m_parent, 0, last);
     while (m_children.count())
         delete m_children.takeLast();
     m_tagMgr->removed(m_parent, 0, last);
@@ -163,9 +163,11 @@ void CTagItem::moveTo(CTagItem *newParent)
     int oldIndex = index();
     int newIndex = newParent->count();
 
-    m_tagMgr->callbackAboutToMoved(oldParent, oldIndex, oldIndex, newParent, newIndex);
+    m_tagMgr->callbackAboutToBeMoved(this);
+    m_tagMgr->callbackAboutToBeMoved(oldParent, oldIndex, oldIndex, newParent, newIndex);
     newParent->add(oldParent->takeAt(oldIndex));
     m_tagMgr->moved(oldParent, oldIndex, oldIndex, newParent, newIndex);
+    m_tagMgr->callbackMoved(this);
 }
 
 void CTagItem::setData(const CTag &data)

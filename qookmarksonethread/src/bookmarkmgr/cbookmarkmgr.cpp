@@ -55,7 +55,7 @@ CBookmarkItem *CBookmarkMgr::add(const CBookmark &data)
     CBookmarkItem *item = new CBookmarkItem(data, this);
     int index = m_bookmarkItems.count();
 
-    emit aboutToInserted(index, index);
+    emit aboutToBeInserted(index, index);
     m_bookmarkItems.push_back(item);
     emit inserted(index, index);
 
@@ -74,7 +74,7 @@ CBookmarkItem *CBookmarkMgr::replace(const CBookmark &data)
         item = new CBookmarkItem(data, this);
         int index = m_bookmarkItems.count();
 
-        emit aboutToInserted(index, index);
+        emit aboutToBeInserted(index, index);
         m_bookmarkItems.push_back(item);
         emit inserted(index, index);
     }
@@ -83,7 +83,7 @@ CBookmarkItem *CBookmarkMgr::replace(const CBookmark &data)
 
 void CBookmarkMgr::removeAt(int index)
 {
-    emit aboutToRemoved(index, index);
+    emit aboutToBeRemoved(index, index);
     delete m_bookmarkItems.takeAt(index);
     emit removed(index, index);
 }
@@ -95,7 +95,7 @@ void CBookmarkMgr::removeAll()
 
     int last = m_bookmarkItems.count() - 1;
 
-    emit aboutToRemoved(0, last);
+    emit aboutToBeRemoved(0, last);
     while (m_bookmarkItems.count())
         delete m_bookmarkItems.takeLast();
     emit removed(0, last);
