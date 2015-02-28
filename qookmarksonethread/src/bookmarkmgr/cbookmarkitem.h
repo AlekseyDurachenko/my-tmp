@@ -15,21 +15,21 @@
 #ifndef CBOOKMARKITEM_H
 #define CBOOKMARKITEM_H
 
+#include <QSet>
 #include "cbookmark.h"
-#include "ctagitem.h"
-
-
+class CTagItem;
 class CBookmarkMgr;
+
+
 class CBookmarkItem
 {
     friend class CBookmarkMgr;
     friend class CTagItem;
-
-    CBookmarkItem(CBookmarkMgr *mgr);
-    CBookmarkItem(const CBookmark &data, CBookmarkMgr *mgr);
+private:
+    CBookmarkItem(const CBookmark &data, CBookmarkMgr *bookmarkMgr);
     ~CBookmarkItem();
 public:
-    inline CBookmarkMgr *mgr() const;
+    inline CBookmarkMgr *bookmarkMgr() const;
     int index() const;
 
     inline const CBookmark &data() const;
@@ -37,19 +37,19 @@ public:
 
     inline const QSet<CTagItem *> &tags() const;
 private:
-    void notifyTagsAboutDestroyed();
+    void notifyTagAboutDestroyed();
 private:
-    void callbackTagRegistred(CTagItem *tag);
-    void callbackTagUnregistred(CTagItem *tag);
+    void callbackTagAdd(CTagItem *tag);
+    void callbackTagRemove(CTagItem *tag);
 private:
-    CBookmarkMgr *m_mgr;
-    QSet<CTagItem *> m_tags;
     CBookmark m_data;
+    CBookmarkMgr *m_bookmarkMgr;
+    QSet<CTagItem *> m_tags;
 };
 
-CBookmarkMgr *CBookmarkItem::mgr() const
+CBookmarkMgr *CBookmarkItem::bookmarkMgr() const
 {
-    return m_mgr;
+    return m_bookmarkMgr;
 }
 
 const CBookmark &CBookmarkItem::data() const

@@ -17,30 +17,25 @@
 #include "cbookmarkmgr.h"
 
 
-CBookmarkItem::CBookmarkItem(CBookmarkMgr *mgr)
-{
-    m_mgr = mgr;
-}
-
-CBookmarkItem::CBookmarkItem(const CBookmark &data, CBookmarkMgr *mgr)
+CBookmarkItem::CBookmarkItem(const CBookmark &data, CBookmarkMgr *bookmarkMgr)
 {
     m_data = data;
-    m_mgr = mgr;
+    m_bookmarkMgr = bookmarkMgr;
 }
 
 CBookmarkItem::~CBookmarkItem()
 {
-    notifyTagsAboutDestroyed();
+    notifyTagAboutDestroyed();
 }
 
 int CBookmarkItem::index() const
 {
-    return m_mgr->bookmarkIndexOf(const_cast<CBookmarkItem *>(this));
+    return m_bookmarkMgr->indexOf(const_cast<CBookmarkItem *>(this));
 }
 
 void CBookmarkItem::setData(const CBookmark &data)
 {
-    CBookmarkItem *item = mgr()->bookmarkFind(data.url());
+    CBookmarkItem *item = m_bookmarkMgr->find(data.url());
     if (item && item != this)
         return;
 
@@ -48,29 +43,26 @@ void CBookmarkItem::setData(const CBookmark &data)
         return;
 
     m_data = data;
-    m_mgr->callbackBookmarkDataChanged(this);
+    m_bookmarkMgr->callbackDataChanged(this);
 }
 
-void CBookmarkItem::notifyTagsAboutDestroyed()
+void CBookmarkItem::notifyTagAboutDestroyed()
 {
     foreach (CTagItem *item, m_tags)
+    {
+        m_tags.remove(item);
         item->callbackBookmarkDestroyed(this);
+    }
 }
 
-void CBookmarkItem::callbackTagRegistred(CTagItem *tag)
+void CBookmarkItem::callbackTagAdd(CTagItem *tag)
 {
-    if (m_tags.contains(tag))
-        return;
-
     m_tags.insert(tag);
-    mgr()->callbackBookmarkTagsChanged(this);
+    m_bookmarkMgr->callbackTagsChanged(this);
 }
 
-void CBookmarkItem::callbackTagUnregistred(CTagItem *tag)
+void CBookmarkItem::callbackTagRemove(CTagItem *tag)
 {
-    if (!m_tags.contains(tag))
-        return;
-
     m_tags.remove(tag);
-    mgr()->callbackBookmarkTagsChanged(this);
+    m_bookmarkMgr->callbackTagsChanged(this);
 }

@@ -7,14 +7,14 @@
 #include "ctagitemmodel.h"
 
 
-void printTagItem(const QString &path, CTagItem *item)
-{
-    foreach (CTagItem *tmp, item->children())
-    {
-        qDebug() << path + tmp->data().name();
-        printTagItem(path + tmp->data().name() + " >> ", tmp);
-    }
-}
+//void printTagItem(const QString &path, CTagItem *item)
+//{
+//    foreach (CTagItem *tmp, item->children())
+//    {
+//        qDebug() << path + tmp->data().name();
+//        printTagItem(path + tmp->data().name() + " >> ", tmp);
+//    }
+//}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -22,7 +22,39 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    CBookmarkMgr *bookmarkMgr = new CBookmarkMgr(this);
+//    QSet<QString> set;
+//    set << "January" << "February" << "December";
+
+//    foreach (QString item, set)
+//    {
+//        qDebug() << set;
+//        qDebug() << item;
+//        set.remove(item);
+//    }
+//    qDebug() << set;
+
+
+//    QSet<QString> set;
+//    set << "January" << "February" << "December";
+
+//    QSet<QString>::iterator i;
+//    for (i = set.begin(); i != set.end(); i = set.erase(i))
+//    {
+//        qDebug() << set;
+//        qDebug() << *i;
+//    }
+//    qDebug() << set;
+
+//    QSet<QString>::iterator i = set.begin();
+//    while (i != set.end()) {
+//        qDebug() << *i;
+//        i = set.erase(i);
+//    }
+
+//    qDebug() << set;
+//    exit(0);
+
+//    CBookmarkMgr *bookmarkMgr = new CBookmarkMgr(this);
 //    CBookmark _b1;
 //    _b1.setUrl(QUrl("ru.ru"));
 //    CBookmarkItem *b1 = bookmarkMgr->bookmarkAdd(_b1);
@@ -33,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 //    t1->bookmarkAdd(b1);
 //    t1->bookmarkAdd(b1);
-    bookmarkImportChromium(bookmarkMgr, QDir::homePath() + "/.config/chromium/Default/Bookmarks");
+    //bookmarkImportChromium(bookmarkMgr, QDir::homePath() + "/.config/chromium/Default/Bookmarks");
 
 
 //    foreach (CBookmarkItem *item, bookmarkMgr->bookmarks())
@@ -45,8 +77,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 //    printTagItem("", bookmarkMgr->tagRootItem());
 
-    CTagItemModel *model = new CTagItemModel(bookmarkMgr->tagRootItem(), this);
-    ui->tag_treeView->setModel(model);
+    //CTagItemModel *model = new CTagItemModel(bookmarkMgr->tagRootItem(), this);
+    //ui->tag_treeView->setModel(model);
 }
 
 MainWindow::~MainWindow()

@@ -17,53 +17,67 @@
 
 #include <QObject>
 #include "cbookmarkitem.h"
-#include "ctagitem.h"
+class CMgr;
+class CTagMgr;
 
 
 class CBookmarkMgr : public QObject
 {
     Q_OBJECT
+
     friend class CBookmarkItem;
-    friend class CTagItem;
-public:
-    explicit CBookmarkMgr(QObject *parent = 0);
-    virtual ~CBookmarkMgr();
-
-    int bookmarkCount() const;
-    int bookmarkIndexOf(CBookmarkItem *item) const; // need??
-    int bookmarkIndexOf(const QUrl &url) const;     // need??
-    CBookmarkItem *bookmarkAt(int index) const;
-    CBookmarkItem *bookmarkFind(const QUrl &url) const;
-    CBookmarkItem *bookmarkAdd(const CBookmark &data);
-    CBookmarkItem *bookmarkAddOrReplace(const CBookmark &data);
-    void bookmarkRemove(CBookmarkItem *item);   // need??
-    void bookmarkRemove(const QUrl &url);
-    void bookmarkRemoveAt(int index);           // need??
-    void bookmarkRemoveAll();
-    const QList<CBookmarkItem *> &bookmarks() const;
-
-    CTagItem *tagRootItem() const;
-signals:
-    void bookmarkInserted(CBookmarkItem *item);
-    void bookmarkRemoved(CBookmarkItem *item);
-    void bookmarkDataChanged(CBookmarkItem *item);
-    void bookmarkTagsChanged(CBookmarkItem *item);
-
-    void tagInserted(CTagItem *parent, int index);
-    void tagRemoved(CTagItem *parent, int index);
-    void tagMoved(CTagItem *oldParent, int oldIndex, CTagItem *newParent, int newIndex);
-    void tagDataChanged(CTagItem *parent, int index);
+    friend class CTagMgr;
+    friend class CMgr;
 private:
-    void callbackBookmarkDataChanged(CBookmarkItem *item);
-    void callbackBookmarkTagsChanged(CBookmarkItem *item);
-    void callbackTagInserted(CTagItem *parent, int index);
-    void callbackTagRemoved(CTagItem *parent, int index);
-    void callbackTagMoved(CTagItem *oldParent, int oldIndex, CTagItem *newParent, int newIndex);
-    void callbackTagDataChanged(CTagItem *parent, int index);
+    explicit CBookmarkMgr(CMgr *mgr = 0);
+    virtual ~CBookmarkMgr();
+public:
+    inline CMgr *mgr() const;
+
+    inline int count() const;
+    int indexOf(CBookmarkItem *item) const;
+    int indexOf(const QUrl &url) const;
+    inline const QList<CBookmarkItem *> &bookmarks() const;
+    inline CBookmarkItem *at(int index) const;
+    CBookmarkItem *find(const QUrl &url) const;
+    CBookmarkItem *add(const CBookmark &data);
+    CBookmarkItem *replace(const CBookmark &data);
+    void removeAt(int index);
+    void removeAll();
+signals:
+    void aboutToInserted(int first, int last);
+    void inserted(int first, int last);
+    void aboutToRemoved(int first, int last);
+    void removed(int first, int last);
+    void dataChanged(CBookmarkItem *item);
+    void tagsChanged(CBookmarkItem *item);
+private:
+    void callbackDataChanged(CBookmarkItem *item);
+    void callbackTagsChanged(CBookmarkItem *item);
 private:
     QList<CBookmarkItem *> m_bookmarkItems;
-    CTagItem *m_tagRootItem;
+    CMgr *m_mgr;
 };
+
+CMgr *CBookmarkMgr::mgr() const
+{
+    return m_mgr;
+}
+
+int CBookmarkMgr::count() const
+{
+    return m_bookmarkItems.count();
+}
+
+const QList<CBookmarkItem *> &CBookmarkMgr::bookmarks() const
+{
+    return m_bookmarkItems;
+}
+
+CBookmarkItem *CBookmarkMgr::at(int index) const
+{
+    return m_bookmarkItems.at(index);
+}
 
 
 #endif // CBOOKMARKMGR_H

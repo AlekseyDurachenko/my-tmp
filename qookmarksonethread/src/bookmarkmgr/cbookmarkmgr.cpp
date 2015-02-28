@@ -13,25 +13,25 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cbookmarkmgr.h"
+#include "cmgr.h"
 
-CBookmarkMgr::CBookmarkMgr(QObject *parent) : QObject(parent)
+
+CBookmarkMgr::CBookmarkMgr(CMgr *mgr) : QObject(mgr)
 {
-    m_tagRootItem = new CTagItem(this);
+    m_mgr = mgr;
 }
 
 CBookmarkMgr::~CBookmarkMgr()
 {
-    bookmarkRemoveAll();
-    m_tagRootItem->removeAll();
-    delete m_tagRootItem;
+    removeAll();
 }
 
-int CBookmarkMgr::bookmarkCount() const
+int CBookmarkMgr::indexOf(CBookmarkItem *item) const
 {
-    return m_bookmarkItems.count();
+    return m_bookmarkItems.indexOf(item);
 }
 
-int CBookmarkMgr::bookmarkIndexOf(const QUrl &url) const
+int CBookmarkMgr::indexOf(const QUrl &url) const
 {
     for (int i = 0; i < m_bookmarkItems.count(); ++i)
         if (m_bookmarkItems.at(i)->data().url() == url)
@@ -39,38 +39,32 @@ int CBookmarkMgr::bookmarkIndexOf(const QUrl &url) const
     return -1;
 }
 
-int CBookmarkMgr::bookmarkIndexOf(CBookmarkItem *item) const
+CBookmarkItem *CBookmarkMgr::find(const QUrl &url) const
 {
-    return m_bookmarkItems.indexOf(item);
-}
-
-CBookmarkItem *CBookmarkMgr::bookmarkAt(int index) const
-{
-    return m_bookmarkItems.value(index);
-}
-
-CBookmarkItem *CBookmarkMgr::bookmarkFind(const QUrl &url) const
-{
-    int index = bookmarkIndexOf(url);
+    int index = indexOf(url);
     if (index == -1)
         return 0;
-    return m_bookmarkItems.value(index);
+    return m_bookmarkItems.at(index);
 }
 
-CBookmarkItem *CBookmarkMgr::bookmarkAdd(const CBookmark &data)
+CBookmarkItem *CBookmarkMgr::add(const CBookmark &data)
 {
-    if (bookmarkFind(data.url()))
+    if (find(data.url()))
         return 0;
 
     CBookmarkItem *item = new CBookmarkItem(data, this);
+    int index = m_bookmarkItems.count();
+
+    emit aboutToInserted(index, index);
     m_bookmarkItems.push_back(item);
-    emit bookmarkInserted(item);
+    emit inserted(index, index);
+
     return item;
 }
 
-CBookmarkItem *CBookmarkMgr::bookmarkAddOrReplace(const CBookmark &data)
+CBookmarkItem *CBookmarkMgr::replace(const CBookmark &data)
 {
-    CBookmarkItem *item = bookmarkFind(data.url());
+    CBookmarkItem *item = find(data.url());
     if (item)
     {
         item->setData(data);
@@ -78,85 +72,41 @@ CBookmarkItem *CBookmarkMgr::bookmarkAddOrReplace(const CBookmark &data)
     else
     {
         item = new CBookmarkItem(data, this);
+        int index = m_bookmarkItems.count();
+
+        emit aboutToInserted(index, index);
         m_bookmarkItems.push_back(item);
-        emit bookmarkInserted(item);
+        emit inserted(index, index);
     }
     return item;
 }
 
-void CBookmarkMgr::bookmarkRemove(CBookmarkItem *item)
+void CBookmarkMgr::removeAt(int index)
 {
-    int index = bookmarkIndexOf(item);
-    if (index == -1)
+    emit aboutToRemoved(index, index);
+    delete m_bookmarkItems.takeAt(index);
+    emit removed(index, index);
+}
+
+void CBookmarkMgr::removeAll()
+{
+    if (m_bookmarkItems.isEmpty())
         return;
-    bookmarkRemoveAt(index);
-}
 
-void CBookmarkMgr::bookmarkRemove(const QUrl &url)
-{
-    int index = bookmarkIndexOf(url);
-    if (index == -1)
-        return;
-    bookmarkRemoveAt(index);
-}
+    int last = m_bookmarkItems.count() - 1;
 
-void CBookmarkMgr::bookmarkRemoveAt(int index)
-{
-    CBookmarkItem *item = m_bookmarkItems.takeAt(index);
-    emit bookmarkRemoved(item);
-    delete item;
-}
-
-void CBookmarkMgr::bookmarkRemoveAll()
-{
+    emit aboutToRemoved(0, last);
     while (m_bookmarkItems.count())
-    {
-        CBookmarkItem *item = m_bookmarkItems.takeLast();
-        emit bookmarkRemoved(item);
-        delete item;
-    }
+        delete m_bookmarkItems.takeLast();
+    emit removed(0, last);
 }
 
-const QList<CBookmarkItem *> &CBookmarkMgr::bookmarks() const
+void CBookmarkMgr::callbackDataChanged(CBookmarkItem *item)
 {
-    return m_bookmarkItems;
+    emit dataChanged(item);
 }
 
-CTagItem *CBookmarkMgr::tagRootItem() const
+void CBookmarkMgr::callbackTagsChanged(CBookmarkItem *item)
 {
-    return m_tagRootItem;
-}
-
-void CBookmarkMgr::callbackBookmarkDataChanged(CBookmarkItem *item)
-{
-    emit bookmarkDataChanged(item);
-}
-
-void CBookmarkMgr::callbackBookmarkTagsChanged(CBookmarkItem *item)
-{
-    emit bookmarkTagsChanged(item);
-}
-
-void CBookmarkMgr::callbackTagInserted(CTagItem *parent, int index)
-{
-    emit tagInserted(parent, index);
-}
-
-void CBookmarkMgr::callbackTagRemoved(CTagItem *parent, int index)
-{
-    emit tagRemoved(parent, index);
-}
-
-void CBookmarkMgr::callbackTagMoved(CTagItem *oldParent, int oldIndex,
-        CTagItem *newParent, int newIndex)
-{
-    foreach (CBookmarkItem *tmp, newParent->child(newIndex)->bookmarks(true))
-        emit bookmarkTagsChanged(tmp);
-
-    emit tagMoved(oldParent, oldIndex, newParent, newIndex);
-}
-
-void CBookmarkMgr::callbackTagDataChanged(CTagItem *parent, int index)
-{
-    emit tagDataChanged(parent, index);
+    emit tagsChanged(item);
 }

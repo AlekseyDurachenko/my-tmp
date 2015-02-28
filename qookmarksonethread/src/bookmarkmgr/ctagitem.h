@@ -17,59 +17,62 @@
 
 #include <QSet>
 #include "ctag.h"
-
+class CTagMgr;
 class CBookmarkItem;
-class CBookmarkMgr;
+
+
 class CTagItem
 {
-    friend class CBookmarkMgr;
     friend class CBookmarkItem;
-
-    CTagItem(CBookmarkMgr *mgr, CTagItem *parent = 0);
-    CTagItem(const CTag &data, CBookmarkMgr *mgr, CTagItem *parent = 0);
+    friend class CTagMgr;
+private:
+    CTagItem(const CTag &data, CTagMgr *tagMgr, CTagItem *parent = 0);
     ~CTagItem();
 public:
-    inline CBookmarkMgr *mgr() const;
+    inline CTagMgr *tagMgr() const;
     inline CTagItem *parent() const;
     inline int index() const;
 
-    inline int childCount();
-    inline int indexOfChild(CTagItem *item) const;
-    inline CTagItem *child(int index) const;
-    inline CTagItem *findChild(const QString &name) const;
-    CTagItem *findChild(const QStringList &path) const;
-    inline const QList<CTagItem *> &children() const;
-    CTagItem *addChild(const CTag &data);
-    QStringList path() const;
-    bool contains(CTagItem *item) const;
-    void moveTo(CTagItem *newParent);
-    void remove(CTagItem *item);
-    void removeAll();
-
     inline const QSet<CBookmarkItem *> &bookmarks() const;
-    QSet<CBookmarkItem *> bookmarks(bool recursive) const;
+    QSet<CBookmarkItem *> bookmarksRecursively() const;
     void bookmarkAdd(CBookmarkItem *item);
     void bookmarkRemove(CBookmarkItem *item);
+
+    inline int count();
+    inline int indexOf(CTagItem *item) const;
+    int indexOf(const QString &name) const;
+    inline const QList<CTagItem *> &children() const;
+    inline CTagItem *at(int index) const;
+    CTagItem *find(const QString &name) const;
+    bool aboveOf(CTagItem *item) const;
+    QStringList path() const;
+    CTagItem *add(const CTag &data);
+    CTagItem *replace(const CTag &data);
+    void removeAt(int index);
+    void removeAll();
+    void moveTo(CTagItem *newParent);
 
     inline const CTag &data() const;
     void setData(const CTag &data);
 private:
     void setParent(CTagItem *parent);
-    void addChild(CTagItem *item);
-    CTagItem *takeChild(CTagItem *item);
+    void add(CTagItem *item);
+    CTagItem *takeAt(int index);
+private:
+    void notifyBookmarkAboutDestroyed();
 private:
     void callbackBookmarkDestroyed(CBookmarkItem *bookmark);
 private:
-    CBookmarkMgr *m_mgr;
+    CTag m_data;
+    CTagMgr *m_tagMgr;
     CTagItem *m_parent;
     QList<CTagItem *> m_children;
     QSet<CBookmarkItem *> m_bookmarks;
-    CTag m_data;
 };
 
-CBookmarkMgr *CTagItem::mgr() const
+CTagMgr *CTagItem::tagMgr() const
 {
-    return m_mgr;
+    return m_tagMgr;
 }
 
 CTagItem *CTagItem::parent() const
@@ -79,43 +82,32 @@ CTagItem *CTagItem::parent() const
 
 int CTagItem::index() const
 {
-    if (m_parent)
-        return m_parent->indexOfChild(const_cast<CTagItem *>(this));
-
-    return 0;
-}
-
-int CTagItem::childCount()
-{
-    return m_children.count();
-}
-
-int CTagItem::indexOfChild(CTagItem *item) const
-{
-    return m_children.indexOf(item);
-}
-
-CTagItem *CTagItem::child(int index) const
-{
-    return m_children.value(index);
-}
-
-CTagItem *CTagItem::findChild(const QString &name) const
-{
-    foreach (CTagItem *tag, m_children)
-        if (tag->data().name() == name)
-            return tag;
-    return 0;
-}
-
-const QList<CTagItem *> &CTagItem::children() const
-{
-    return m_children;
+    return (m_parent)?(m_parent->indexOf(const_cast<CTagItem *>(this))):(0);
 }
 
 const QSet<CBookmarkItem *> &CTagItem::bookmarks() const
 {
     return m_bookmarks;
+}
+
+int CTagItem::count()
+{
+    return m_children.count();
+}
+
+int CTagItem::indexOf(CTagItem *item) const
+{
+    return m_children.indexOf(item);
+}
+
+CTagItem *CTagItem::at(int index) const
+{
+    return m_children.value(index);
+}
+
+const QList<CTagItem *> &CTagItem::children() const
+{
+    return m_children;
 }
 
 const CTag &CTagItem::data() const
