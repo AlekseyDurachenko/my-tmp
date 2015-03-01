@@ -37,27 +37,27 @@ INCLUDEPATH    +=                                           \
 
 HEADERS        +=                                           \
     src/mainwindow.h \
-    src/bookmarkmgr/cbookmark.h \
-    src/bookmarkmgr/cbookmarkitem.h \
-    src/bookmarkmgr/cbookmarkmgr.h \
-    src/bookmarkmgr/ctagitem.h \
-    src/bookmarkmgr/ctag.h \
+    src/manager/cbookmark.h \
+    src/manager/cbookmarkitem.h \
+    src/manager/cbookmarkmgr.h \
+    src/manager/ctagitem.h \
+    src/manager/ctag.h \
     src/bookmarkimport/bookmarkimportchromium.h \
     #src/tagitemmodel/ctagitemmodel.h
-    src/bookmarkmgr/cmgr.h \
-    src/bookmarkmgr/ctagmgr.h
+    src/manager/cmgr.h \
+    src/manager/ctagmgr.h
 
 SOURCES        +=                                           \
     src/mainwindow.cpp \
-    src/bookmarkmgr/cbookmark.cpp \
-    src/bookmarkmgr/cbookmarkitem.cpp \
-    src/bookmarkmgr/cbookmarkmgr.cpp \
-    src/bookmarkmgr/ctagitem.cpp \
-    src/bookmarkmgr/ctag.cpp \
+    src/manager/cbookmark.cpp \
+    src/manager/cbookmarkitem.cpp \
+    src/manager/cbookmarkmgr.cpp \
+    src/manager/ctagitem.cpp \
+    src/manager/ctag.cpp \
     src/bookmarkimport/bookmarkimportchromium.cpp \
     #src/tagitemmodel/ctagitemmodel.cpp
-    src/bookmarkmgr/cmgr.cpp \
-    src/bookmarkmgr/ctagmgr.cpp
+    src/manager/cmgr.cpp \
+    src/manager/ctagmgr.cpp
 
 FORMS          +=                                           \
     src/mainwindow.ui
