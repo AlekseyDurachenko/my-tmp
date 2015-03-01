@@ -16,8 +16,8 @@
 #define CBOOKMARK_H
 
 #include <QSharedDataPointer>
+#include <QSet>
 #include <QUrl>
-#include <QFont>
 #include <QColor>
 #include <QDateTime>
 
@@ -31,14 +31,14 @@ public:
     QString description;
     // ext
     QString comment;
-    QStringList keywordList;
+    QSet<QString> keywords;
     bool isReadLater;
     bool isFavorite;
     bool isDeleted;
     int rating;
     // style
     QColor textColor;
-    QColor textBackgroundColor;
+    QColor backgroundColor;
     // meta
     QDateTime createdDateTime;
     QDateTime editedDateTime;
@@ -49,6 +49,7 @@ public:
     QString httpResponseText;
     QDateTime lastCheckDateTime;
 };
+
 
 class CBookmark
 {
@@ -70,8 +71,8 @@ public:
     inline const QString &comment() const;
     void setComment(const QString &comment);
 
-    inline const QStringList &keywordList() const;
-    void setKeywordList(const QStringList &keywordList);
+    inline const QSet<QString> &keywords() const;
+    void setKeywords(const QSet<QString> &keywords);
 
     inline bool isReadLater() const;
     void setReadLater(bool state);
@@ -88,8 +89,8 @@ public:
     inline const QColor &textColor() const;
     void setTextColor(const QColor &textColor);
 
-    inline const QColor &textBackgroundColor() const;
-    void setTextBackgroundColor(const QColor &textBackgroundColor);
+    inline const QColor &backgroundColor() const;
+    void setBackgroundColor(const QColor &backgroundColor);
 
     inline const QDateTime &createdDateTime() const;
     void setCreatedDateTime(const QDateTime &createdDateTime);
@@ -138,9 +139,9 @@ const QString &CBookmark::comment() const
     return data->comment;
 }
 
-const QStringList &CBookmark::keywordList() const
+const QSet<QString> &CBookmark::keywords() const
 {
-    return data->keywordList;
+    return data->keywords;
 }
 
 bool CBookmark::isReadLater() const
@@ -168,9 +169,9 @@ const QColor &CBookmark::textColor() const
     return data->textColor;
 }
 
-const QColor &CBookmark::textBackgroundColor() const
+const QColor &CBookmark::backgroundColor() const
 {
-    return data->textBackgroundColor;
+    return data->backgroundColor;
 }
 
 const QDateTime &CBookmark::createdDateTime() const
@@ -214,13 +215,13 @@ bool CBookmark::operator ==(const CBookmark &other)
             && data->url == other.data->url
             && data->description == other.data->description
             && data->comment == other.data->comment
-            && data->keywordList == other.data->keywordList
+            && data->keywords == other.data->keywords
             && data->isReadLater == other.data->isReadLater
             && data->isFavorite == other.data->isFavorite
             && data->isDeleted == other.data->isDeleted
             && data->rating == other.data->rating
             && data->textColor == other.data->textColor
-            && data->textBackgroundColor == other.data->textBackgroundColor
+            && data->backgroundColor == other.data->backgroundColor
             && data->createdDateTime == other.data->createdDateTime
             && data->editedDateTime == other.data->editedDateTime
             && data->lastVisitedDateTime == other.data->lastVisitedDateTime
@@ -236,13 +237,13 @@ bool CBookmark::operator !=(const CBookmark &other)
             || data->url != other.data->url
             || data->description != other.data->description
             || data->comment != other.data->comment
-            || data->keywordList != other.data->keywordList
+            || data->keywords != other.data->keywords
             || data->isReadLater != other.data->isReadLater
             || data->isFavorite != other.data->isFavorite
             || data->isDeleted != other.data->isDeleted
             || data->rating != other.data->rating
             || data->textColor != other.data->textColor
-            || data->textBackgroundColor != other.data->textBackgroundColor
+            || data->backgroundColor != other.data->backgroundColor
             || data->createdDateTime != other.data->createdDateTime
             || data->editedDateTime != other.data->editedDateTime
             || data->lastVisitedDateTime != other.data->lastVisitedDateTime

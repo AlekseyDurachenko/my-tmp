@@ -61,9 +61,9 @@ void CBookmark::setComment(const QString &comment)
     data->comment = comment;
 }
 
-void CBookmark::setKeywordList(const QStringList &keywordList)
+void CBookmark::setKeywords(const QSet<QString> &keywords)
 {
-    data->keywordList = keywordList;
+    data->keywords = keywords;
 }
 
 void CBookmark::setReadLater(bool state)
@@ -91,9 +91,9 @@ void CBookmark::setTextColor(const QColor &textColor)
     data->textColor = textColor;
 }
 
-void CBookmark::setTextBackgroundColor(const QColor &textBackgroundColor)
+void CBookmark::setBackgroundColor(const QColor &backgroundColor)
 {
-    data->textBackgroundColor = textBackgroundColor;
+    data->backgroundColor = backgroundColor;
 }
 
 void CBookmark::setCreatedDateTime(const QDateTime &createdDateTime)

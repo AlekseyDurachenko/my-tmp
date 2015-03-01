@@ -39,4 +39,3 @@ void CTag::setName(const QString &name)
 {
     data->name = name;
 }
-

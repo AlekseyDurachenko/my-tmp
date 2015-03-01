@@ -25,6 +25,7 @@ public:
     QString name;
 };
 
+
 class CTag
 {
 public:
