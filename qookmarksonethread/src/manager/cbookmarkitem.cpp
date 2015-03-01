@@ -33,17 +33,19 @@ int CBookmarkItem::index() const
     return m_bookmarkMgr->indexOf(const_cast<CBookmarkItem *>(this));
 }
 
-void CBookmarkItem::setData(const CBookmark &data)
+bool CBookmarkItem::setData(const CBookmark &data)
 {
     CBookmarkItem *item = m_bookmarkMgr->find(data.url());
     if (item && item != this)
-        return;
+        return false;
 
-    if (m_data == data)
-        return;
+    if (m_data != data)
+    {
+        m_data = data;
+        m_bookmarkMgr->callbackDataChanged(this);
+    }
 
-    m_data = data;
-    m_bookmarkMgr->callbackDataChanged(this);
+    return true;
 }
 
 void CBookmarkItem::notifyTagAboutDestroyed()

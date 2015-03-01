@@ -30,7 +30,7 @@ DEFINES        +=                                           \
 
 INCLUDEPATH    +=                                           \
     $$PWD/src                                               \
-    $$PWD/src/bookmarkmgr                                   \
+    $$PWD/src/manager                                       \
     $$PWD/src/bookmarkimport                                \
     $$PWD/src/tagitemmodel                                  \
 
@@ -44,8 +44,8 @@ HEADERS        +=                                           \
     src/manager/ctag.h \
     src/bookmarkimport/bookmarkimportchromium.h \
     #src/tagitemmodel/ctagitemmodel.h
-    src/manager/cmgr.h \
-    src/manager/ctagmgr.h
+    src/manager/ctagmgr.h \
+    src/manager/cmanager.h
 
 SOURCES        +=                                           \
     src/mainwindow.cpp \
@@ -56,8 +56,8 @@ SOURCES        +=                                           \
     src/manager/ctag.cpp \
     src/bookmarkimport/bookmarkimportchromium.cpp \
     #src/tagitemmodel/ctagitemmodel.cpp
-    src/manager/cmgr.cpp \
-    src/manager/ctagmgr.cpp
+    src/manager/ctagmgr.cpp \
+    src/manager/cmanager.cpp
 
 FORMS          +=                                           \
     src/mainwindow.ui
@@ -110,3 +110,6 @@ build_pass:CONFIG(release, debug|release) {
         LIBS +=
     }
 }
+
+DISTFILES += \
+    src/manager/CManager

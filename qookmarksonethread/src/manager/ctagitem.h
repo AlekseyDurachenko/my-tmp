@@ -50,10 +50,10 @@ public:
     CTagItem *replace(const CTag &data);
     void removeAt(int index);
     void removeAll();
-    void moveTo(CTagItem *newParent);
+    bool moveTo(CTagItem *newParent);
 
     inline const CTag &data() const;
-    void setData(const CTag &data);
+    bool setData(const CTag &data);
 private:
     void setParent(CTagItem *parent);
     void add(CTagItem *item);
@@ -82,7 +82,7 @@ CTagItem *CTagItem::parent() const
 
 int CTagItem::index() const
 {
-    return (m_parent)?(m_parent->indexOf(const_cast<CTagItem *>(this))):(0);
+    return (m_parent) ? (m_parent->indexOf(const_cast<CTagItem *>(this))) : (0);
 }
 
 const QSet<CBookmarkItem *> &CTagItem::bookmarks() const

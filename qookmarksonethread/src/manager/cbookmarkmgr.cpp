@@ -13,10 +13,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cbookmarkmgr.h"
-#include "cmgr.h"
+#include "cbookmarkitem.h"
+#include "cmanager.h"
 
 
-CBookmarkMgr::CBookmarkMgr(CMgr *mgr) : QObject(mgr)
+CBookmarkMgr::CBookmarkMgr(CManager *mgr) : QObject(mgr)
 {
     m_mgr = mgr;
 }

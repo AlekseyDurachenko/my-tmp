@@ -16,10 +16,10 @@
 #define CBOOKMARKMGR_H
 
 #include <QObject>
-#include "cbookmarkitem.h"
-class CMgr;
+#include "cbookmark.h"
+class CManager;
 class CTagMgr;
-
+class CBookmarkItem;
 
 class CBookmarkMgr : public QObject
 {
@@ -27,12 +27,12 @@ class CBookmarkMgr : public QObject
 
     friend class CBookmarkItem;
     friend class CTagMgr;
-    friend class CMgr;
+    friend class CManager;
 private:
-    explicit CBookmarkMgr(CMgr *mgr = 0);
+    explicit CBookmarkMgr(CManager *mgr = 0);
     virtual ~CBookmarkMgr();
 public:
-    inline CMgr *mgr() const;
+    inline CManager *mgr() const;
 
     inline int count() const;
     int indexOf(CBookmarkItem *item) const;
@@ -56,10 +56,10 @@ private:
     void callbackTagsChanged(CBookmarkItem *item);
 private:
     QList<CBookmarkItem *> m_bookmarkItems;
-    CMgr *m_mgr;
+    CManager *m_mgr;
 };
 
-CMgr *CBookmarkMgr::mgr() const
+CManager *CBookmarkMgr::mgr() const
 {
     return m_mgr;
 }

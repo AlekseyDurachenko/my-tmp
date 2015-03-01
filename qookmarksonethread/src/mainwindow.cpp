@@ -1,11 +1,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "cbookmarkmgr.h"
 #include <QDebug>
-#include "bookmarkimportchromium.h"
 #include <QDir>
+#include "cmanager.h"
+#include "ctagmgr.h"
+#include "ctagitem.h"
+#include "cbookmarkmgr.h"
+#include "cbookmarkitem.h"
+#include "bookmarkimportchromium.h"
 #include "ctagitemmodel.h"
-#include "cmgr.h"
 
 
 void printTagItem(const QString &path, CTagItem *item)
@@ -81,7 +84,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //CTagItemModel *model = new CTagItemModel(bookmarkMgr->tagRootItem(), this);
     //ui->tag_treeView->setModel(model);
 
-    CMgr *mgr = new CMgr(this);
+    CManager *mgr = new CManager(this);
     bookmarkImportChromium(mgr, QDir::homePath() + "/.config/chromium/Default/Bookmarks");
 
     foreach (CBookmarkItem *item, mgr->bookmarkMgr()->bookmarks())

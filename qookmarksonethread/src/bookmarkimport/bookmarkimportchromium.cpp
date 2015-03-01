@@ -15,9 +15,14 @@
 #include "bookmarkimportchromium.h"
 #include <json.h>
 #include <QFile>
+#include "cmanager.h"
+#include "ctagmgr.h"
+#include "ctagitem.h"
+#include "cbookmarkmgr.h"
+#include "cbookmarkitem.h"
 
 
-static void addUrl(CMgr *mgr, CTagItem *parent, const QVariantMap &map)
+static void addUrl(CManager *mgr, CTagItem *parent, const QVariantMap &map)
 {
     CBookmark data;
     data.setTitle(map.value("name").toString());
@@ -44,7 +49,7 @@ static CTagItem *findOrAddTag(CTagItem *parent, const QVariantMap &map)
 }
 
 
-static void parseFolder(CMgr *mgr, CTagItem *parent, const QVariantMap &map)
+static void parseFolder(CManager *mgr, CTagItem *parent, const QVariantMap &map)
 {
     foreach (QVariant val, map.value("children").toList())
     {
@@ -59,7 +64,7 @@ static void parseFolder(CMgr *mgr, CTagItem *parent, const QVariantMap &map)
 }
 
 
-bool bookmarkImportChromium(CMgr *mgr, const QString &fileName,
+bool bookmarkImportChromium(CManager *mgr, const QString &fileName,
         QString *reason)
 {
     try

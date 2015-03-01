@@ -12,36 +12,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#ifndef CMGR_H
-#define CMGR_H
-
+#include "cmanager.h"
 #include "cbookmarkmgr.h"
 #include "ctagmgr.h"
 
 
-class CMgr : public QObject
+CManager::CManager(QObject *parent) : QObject(parent)
 {
-    Q_OBJECT
-public:
-    explicit CMgr(QObject *parent = 0);
-    virtual ~CMgr();
-
-    inline CBookmarkMgr *bookmarkMgr() const;
-    inline CTagMgr *tagMgr() const;
-private:
-    CBookmarkMgr *m_bookmarkMgr;
-    CTagMgr *m_tagMgr;
-};
-
-CBookmarkMgr *CMgr::bookmarkMgr() const
-{
-    return m_bookmarkMgr;
+    m_bookmarkMgr = new CBookmarkMgr(this);
+    m_tagMgr = new CTagMgr(this);
 }
 
-CTagMgr *CMgr::tagMgr() const
+CManager::~CManager()
 {
-    return m_tagMgr;
 }
-
-
-#endif // CMGR_H

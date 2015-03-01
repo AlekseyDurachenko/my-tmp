@@ -13,10 +13,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "ctagmgr.h"
-#include "cmgr.h"
+#include "cmanager.h"
+#include "ctagitem.h"
+#include "cbookmarkmgr.h"
+#include "cbookmarkitem.h"
 
 
-CTagMgr::CTagMgr(CMgr *mgr) : QObject(mgr)
+CTagMgr::CTagMgr(CManager *mgr) : QObject(mgr)
 {
     m_mgr = mgr;
     m_rootItem = new CTagItem(CTag(), this, 0);

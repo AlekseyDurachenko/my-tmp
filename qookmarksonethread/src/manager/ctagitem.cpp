@@ -80,7 +80,11 @@ CTagItem *CTagItem::find(const QString &name) const
 
 bool CTagItem::aboveOf(CTagItem *item) const
 {
-    for (; item != 0; item = item->parent())
+    // itself is not above of itself
+    if (this == item)
+        return false;
+
+    for (item = item->parent(); item != 0; item = item->parent())
         if (item == this)
             return true;
 
@@ -89,15 +93,11 @@ bool CTagItem::aboveOf(CTagItem *item) const
 
 QStringList CTagItem::path() const
 {
-    QStringList tmpPath;
-    CTagItem *tmpItem = const_cast<CTagItem *>(this);
-    while (tmpItem->parent())
-    {
-        tmpPath.push_front(tmpItem->data().name());
-        tmpItem = tmpItem->parent();
-    }
+    QStringList result;
+    for (const CTagItem *item = this; item->parent(); item = item->parent())
+        result.push_front(item->data().name());
 
-    return tmpPath;
+    return result;
 }
 
 CTagItem *CTagItem::add(const CTag &data)
@@ -154,10 +154,10 @@ void CTagItem::removeAll()
     m_tagMgr->removed(m_parent, 0, last);
 }
 
-void CTagItem::moveTo(CTagItem *newParent)
+bool CTagItem::moveTo(CTagItem *newParent)
 {
     if (aboveOf(newParent))
-        return;
+        return false;
 
     CTagItem *oldParent = m_parent;
     int oldIndex = index();
@@ -168,19 +168,23 @@ void CTagItem::moveTo(CTagItem *newParent)
     newParent->add(oldParent->takeAt(oldIndex));
     m_tagMgr->moved(oldParent, oldIndex, oldIndex, newParent, newIndex);
     m_tagMgr->callbackMoved(this);
+
+    return true;
 }
 
-void CTagItem::setData(const CTag &data)
+bool CTagItem::setData(const CTag &data)
 {
     CTagItem *item = m_parent->find(data.name());
     if (item && item != this)
-        return;
+        return false;
 
-    if (m_data == data)
-        return;
+    if (m_data != data)
+    {
+        m_data = data;
+        m_tagMgr->callbackDataChanged(this);
+    }
 
-    m_data = data;
-    m_tagMgr->callbackDataChanged(this);
+    return true;
 }
 
 void CTagItem::setParent(CTagItem *parent)

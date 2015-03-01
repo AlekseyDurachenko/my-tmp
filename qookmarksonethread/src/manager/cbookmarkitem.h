@@ -33,7 +33,7 @@ public:
     int index() const;
 
     inline const CBookmark &data() const;
-    void setData(const CBookmark &data);
+    bool setData(const CBookmark &data);
 
     inline const QSet<CTagItem *> &tags() const;
 private:

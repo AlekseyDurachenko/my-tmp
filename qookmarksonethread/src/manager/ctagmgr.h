@@ -16,9 +16,9 @@
 #define CTAGMGR_H
 
 #include <QObject>
-#include "ctagitem.h"
-#include "cbookmarkitem.h"
-class CMgr;
+class CTagItem;
+class CBookmarkItem;
+class CManager;
 
 
 class CTagMgr : public QObject
@@ -26,12 +26,12 @@ class CTagMgr : public QObject
     Q_OBJECT
 
     friend class CTagItem;
-    friend class CMgr;
+    friend class CManager;
 private:
-    explicit CTagMgr(CMgr *mgr = 0);
+    explicit CTagMgr(CManager *mgr = 0);
     virtual ~CTagMgr();
 public:
-    inline CMgr *mgr() const;
+    inline CManager *mgr() const;
     inline CTagItem *rootItem() const;
     CTagItem *findByPath(const QStringList &path) const;
 signals:
@@ -60,11 +60,11 @@ private:
     void callbackDataChanged(CTagItem *item);
     void callbackBookmarksChanged(CTagItem *item);
 private:
-    CMgr *m_mgr;
+    CManager *m_mgr;
     CTagItem *m_rootItem;
 };
 
-CMgr *CTagMgr::mgr() const
+CManager *CTagMgr::mgr() const
 {
     return m_mgr;
 }
