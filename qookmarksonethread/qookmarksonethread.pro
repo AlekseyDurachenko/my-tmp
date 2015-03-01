@@ -45,7 +45,9 @@ HEADERS        +=                                           \
     src/bookmarkimport/bookmarkimportchromium.h \
     #src/tagitemmodel/ctagitemmodel.h
     src/manager/ctagmgr.h \
-    src/manager/cmanager.h
+    src/manager/cmanager.h \
+    src/manager/cbookmarkfilter.h \
+    src/consts.h
 
 SOURCES        +=                                           \
     src/mainwindow.cpp \
@@ -57,7 +59,8 @@ SOURCES        +=                                           \
     src/bookmarkimport/bookmarkimportchromium.cpp \
     #src/tagitemmodel/ctagitemmodel.cpp
     src/manager/ctagmgr.cpp \
-    src/manager/cmanager.cpp
+    src/manager/cmanager.cpp \
+    src/manager/cbookmarkfilter.cpp
 
 FORMS          +=                                           \
     src/mainwindow.ui
@@ -111,5 +114,4 @@ build_pass:CONFIG(release, debug|release) {
     }
 }
 
-DISTFILES += \
-    src/manager/CManager
+DISTFILES +=

@@ -30,11 +30,11 @@ public:
     QUrl url;
     QString description;
     // ext
-    QString comment;
+    QString note;
     QSet<QString> keywords;
     bool isReadLater;
     bool isFavorite;
-    bool isDeleted;
+    bool isTrash;
     int rating;
     // style
     QColor textColor;
@@ -68,8 +68,8 @@ public:
     inline const QString &description() const;
     void setDescription(const QString &description);
 
-    inline const QString &comment() const;
-    void setComment(const QString &comment);
+    inline const QString &note() const;
+    void setNote(const QString &note);
 
     inline const QSet<QString> &keywords() const;
     void setKeywords(const QSet<QString> &keywords);
@@ -80,8 +80,8 @@ public:
     inline bool isFavorite() const;
     void setFavorite(bool state);
 
-    inline bool isDeleted() const;
-    void setDeleted(bool state);
+    inline bool isTrash() const;
+    void setTrash(bool state);
 
     inline int rating() const;
     void setRating(int rating);
@@ -134,9 +134,9 @@ const QString &CBookmark::description() const
     return data->description;
 }
 
-const QString &CBookmark::comment() const
+const QString &CBookmark::note() const
 {
-    return data->comment;
+    return data->note;
 }
 
 const QSet<QString> &CBookmark::keywords() const
@@ -154,9 +154,9 @@ bool CBookmark::isFavorite() const
     return data->isFavorite;
 }
 
-bool CBookmark::isDeleted() const
+bool CBookmark::isTrash() const
 {
-    return data->isDeleted;
+    return data->isTrash;
 }
 
 int CBookmark::rating() const
@@ -214,11 +214,11 @@ bool CBookmark::operator ==(const CBookmark &other)
     return (data->title == other.data->title
             && data->url == other.data->url
             && data->description == other.data->description
-            && data->comment == other.data->comment
+            && data->note == other.data->note
             && data->keywords == other.data->keywords
             && data->isReadLater == other.data->isReadLater
             && data->isFavorite == other.data->isFavorite
-            && data->isDeleted == other.data->isDeleted
+            && data->isTrash == other.data->isTrash
             && data->rating == other.data->rating
             && data->textColor == other.data->textColor
             && data->backgroundColor == other.data->backgroundColor
@@ -236,11 +236,11 @@ bool CBookmark::operator !=(const CBookmark &other)
     return (data->title != other.data->title
             || data->url != other.data->url
             || data->description != other.data->description
-            || data->comment != other.data->comment
+            || data->note != other.data->note
             || data->keywords != other.data->keywords
             || data->isReadLater != other.data->isReadLater
             || data->isFavorite != other.data->isFavorite
-            || data->isDeleted != other.data->isDeleted
+            || data->isTrash != other.data->isTrash
             || data->rating != other.data->rating
             || data->textColor != other.data->textColor
             || data->backgroundColor != other.data->backgroundColor
