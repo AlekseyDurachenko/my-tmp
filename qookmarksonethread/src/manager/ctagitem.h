@@ -54,6 +54,16 @@ public:
 
     inline const CTag &data() const;
     bool setData(const CTag &data);
+public:
+    /*!
+     * \brief checkIntersection check the intersection between two sets
+     * \param a set one
+     * \param b set two
+     * \retval true if intersection exists
+     * \retval otherwise
+     */
+    static bool checkIntersection(const QSet<CTagItem *> &a,
+                                  const QSet<CTagItem *> &b);
 private:
     void setParent(CTagItem *parent);
     void add(CTagItem *item);

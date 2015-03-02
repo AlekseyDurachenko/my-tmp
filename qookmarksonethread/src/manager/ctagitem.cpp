@@ -187,6 +187,25 @@ bool CTagItem::setData(const CTag &data)
     return true;
 }
 
+bool CTagItem::checkIntersection(const QSet<CTagItem *> &a,
+                                 const QSet<CTagItem *> &b)
+{
+    if (a.count() < b.count()) // optimization
+    {
+        foreach (CTagItem *tag, a)
+            if (b.contains(tag))
+                return true;
+    }
+    else
+    {
+        foreach (CTagItem *tag, b)
+            if (a.contains(tag))
+                return true;
+    }
+
+    return false;
+}
+
 void CTagItem::setParent(CTagItem *parent)
 {
     m_parent = parent;

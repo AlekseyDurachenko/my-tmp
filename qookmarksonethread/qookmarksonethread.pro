@@ -47,7 +47,8 @@ HEADERS        +=                                           \
     src/manager/ctagmgr.h \
     src/manager/cmanager.h \
     src/manager/cbookmarkfilter.h \
-    src/consts.h
+    src/consts.h \
+    src/manager/cabstractbookmarkfilter.h
 
 SOURCES        +=                                           \
     src/mainwindow.cpp \
@@ -60,7 +61,8 @@ SOURCES        +=                                           \
     #src/tagitemmodel/ctagitemmodel.cpp
     src/manager/ctagmgr.cpp \
     src/manager/cmanager.cpp \
-    src/manager/cbookmarkfilter.cpp
+    src/manager/cbookmarkfilter.cpp \
+    src/manager/cabstractbookmarkfilter.cpp
 
 FORMS          +=                                           \
     src/mainwindow.ui
