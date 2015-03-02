@@ -48,7 +48,8 @@ HEADERS        +=                                           \
     src/manager/cmanager.h \
     src/manager/cbookmarkfilter.h \
     src/consts.h \
-    src/manager/cabstractbookmarkfilter.h
+    src/manager/cabstractbookmarkfilter.h \
+    src/manager/cbookmarkfilterdatamodel.h
 
 SOURCES        +=                                           \
     src/mainwindow.cpp \
@@ -62,7 +63,8 @@ SOURCES        +=                                           \
     src/manager/ctagmgr.cpp \
     src/manager/cmanager.cpp \
     src/manager/cbookmarkfilter.cpp \
-    src/manager/cabstractbookmarkfilter.cpp
+    src/manager/cabstractbookmarkfilter.cpp \
+    src/manager/cbookmarkfilterdatamodel.cpp
 
 FORMS          +=                                           \
     src/mainwindow.ui
