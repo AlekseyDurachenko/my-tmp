@@ -54,6 +54,7 @@ void CBookmarkFilter::setTagMgr(CTagMgr *tagMgr)
                 this, SLOT(tagMgr_aboutToBeRemoved(CTagItem*,int,int)));
     }
 
+    m_tags.clear();
     update();
 }
 
@@ -126,6 +127,6 @@ void CBookmarkFilter::tagMgr_aboutToBeRemoved(CTagItem *parent,
 
 void CBookmarkFilter::tagMgr_destroyed()
 {
-    m_tagMgr = 0;
+    m_tagMgr = 0;    
     update();
 }

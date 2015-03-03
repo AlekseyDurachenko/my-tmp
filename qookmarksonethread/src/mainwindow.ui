@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>893</width>
+    <height>403</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,13 +16,19 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QTreeView" name="tag_treeView">
-      <property name="dragDropMode">
-       <enum>QAbstractItemView::DragDrop</enum>
+     <widget class="QSplitter" name="splitter">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
       </property>
-      <property name="alternatingRowColors">
-       <bool>true</bool>
-      </property>
+      <widget class="QTreeView" name="treeView_tags"/>
+      <widget class="QTreeView" name="treeView_bookmarks">
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragDrop</enum>
+       </property>
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -32,10 +38,19 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>400</width>
+     <width>893</width>
      <height>20</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu_File">
+    <property name="title">
+     <string>&amp;File</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="action_Quit"/>
+    <addaction name="action_Save"/>
+   </widget>
+   <addaction name="menu_File"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <attribute name="toolBarArea">
@@ -46,6 +61,16 @@
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="action_Quit">
+   <property name="text">
+    <string>&amp;Quit...</string>
+   </property>
+  </action>
+  <action name="action_Save">
+   <property name="text">
+    <string>&amp;Save</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

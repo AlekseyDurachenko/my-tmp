@@ -91,7 +91,8 @@ void CBookmarkFilterDataModel::invalidate()
     emit reseted();
 }
 
-void CBookmarkFilterDataModel::invalidate(CBookmarkItem *item)
+void CBookmarkFilterDataModel::invalidate(CBookmarkItem *item,
+        bool hasDataChanges)
 {
     if (!m_filter)
         return;
@@ -103,6 +104,8 @@ void CBookmarkFilterDataModel::invalidate(CBookmarkItem *item)
         insert(item);
     else if (index != -1 && valid == false)
         remove(index);
+    else if (index != -1 && hasDataChanges)
+        emit dataChanged(index, index);
 }
 
 void CBookmarkFilterDataModel::insert(CBookmarkItem *item)
@@ -129,10 +132,6 @@ void CBookmarkFilterDataModel::filter_destroyed()
     invalidate();
 }
 
-//void CBookmarkFilterDataModel::bookmarkMgr_aboutToBeInserted(int first, int last)
-//{
-//}
-
 void CBookmarkFilterDataModel::bookmarkMgr_inserted(int first, int last)
 {
     for (int i = first; i <= last; ++i)
@@ -145,14 +144,9 @@ void CBookmarkFilterDataModel::bookmarkMgr_aboutToBeRemoved(int first, int last)
         invalidate(m_bookmarkMgr->at(i));
 }
 
-//void CBookmarkFilterDataModel::bookmarkMgr_removed(int first, int last)
-//{
-//}
-
 void CBookmarkFilterDataModel::bookmarkMgr_dataChanged(CBookmarkItem *item)
 {
-    int index = indexOf(item);
-    emit dataChanged(index, index);
+    invalidate(item, true);
 }
 
 void CBookmarkFilterDataModel::bookmarkMgr_tagsChanged(CBookmarkItem *item)
@@ -165,4 +159,3 @@ void CBookmarkFilterDataModel::bookmarkMgr_destroyed()
     m_bookmarkMgr = 0;
     invalidate();
 }
-

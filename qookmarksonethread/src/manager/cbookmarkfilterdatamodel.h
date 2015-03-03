@@ -25,7 +25,8 @@ class CBookmarkFilterDataModel : public QObject
 {
     Q_OBJECT
 public:
-    explicit CBookmarkFilterDataModel(CBookmarkMgr *bookmarkMgr, QObject *parent = 0);
+    explicit CBookmarkFilterDataModel(CBookmarkMgr *bookmarkMgr,
+                                      QObject *parent = 0);
     virtual ~CBookmarkFilterDataModel();
 
     inline CBookmarkMgr *bookmarkMgr() const;
@@ -45,16 +46,14 @@ signals:
     void reseted();
 private:
     void invalidate();
-    void invalidate(CBookmarkItem *item);
+    void invalidate(CBookmarkItem *item, bool hasDataChanges = false);
     void insert(CBookmarkItem *item);
     void remove(int index);
 private slots:
     void filter_changed();
     void filter_destroyed();
-//    void bookmarkMgr_aboutToBeInserted(int first, int last);
     void bookmarkMgr_inserted(int first, int last);
     void bookmarkMgr_aboutToBeRemoved(int first, int last);
-//    void bookmarkMgr_removed(int first, int last);
     void bookmarkMgr_dataChanged(CBookmarkItem *item);
     void bookmarkMgr_tagsChanged(CBookmarkItem *item);
     void bookmarkMgr_destroyed();

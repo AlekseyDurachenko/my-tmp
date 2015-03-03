@@ -9,7 +9,10 @@
 #include "cbookmarkitem.h"
 #include "bookmarkimportchromium.h"
 #include "ctagitemmodel.h"
-
+#include "cbookmarkfilter.h"
+#include "cbookmarkfilterdatamodel.h"
+#include "cbookmarkfilter.h"
+#include "cbookmarkfilteritemmodel.h"
 
 void printTagItem(const QString &path, CTagItem *item)
 {
@@ -84,8 +87,17 @@ MainWindow::MainWindow(QWidget *parent) :
     //CTagItemModel *model = new CTagItemModel(bookmarkMgr->tagRootItem(), this);
     //ui->tag_treeView->setModel(model);
 
-    CManager *mgr = new CManager(this);
+    mgr = new CManager(this);
+    dataModel = new CBookmarkFilterDataModel(mgr->bookmarkMgr(), this);
+    filter = new CBookmarkFilter(mgr->tagMgr(), this);
+    dataModel->setFilter(filter);
+    CBookmarkFilteredItemModel *model = new CBookmarkFilteredItemModel(dataModel, this);
+    ui->treeView_bookmarks->setModel(model);
+
+
     bookmarkImportChromium(mgr, QDir::homePath() + "/.config/chromium/Default/Bookmarks");
+
+
 
     foreach (CBookmarkItem *item, mgr->bookmarkMgr()->bookmarks())
     {
@@ -95,9 +107,26 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     printTagItem("", mgr->tagMgr()->rootItem());
+
+    CBookmark data = mgr->bookmarkMgr()->at(0)->data();
+    data.setTrash(true);
+    mgr->bookmarkMgr()->at(0)->setData(data);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::on_action_Quit_triggered()
+{
+    filter->setInclusiveOption(Bookmark::FilterOptions(Bookmark::Trash));
+    filter->update();
+}
+
+void MainWindow::on_action_Save_triggered()
+{
+    CBookmark data = mgr->bookmarkMgr()->at(1)->data();
+    data.setTrash(true);
+    mgr->bookmarkMgr()->at(1)->setData(data);
 }

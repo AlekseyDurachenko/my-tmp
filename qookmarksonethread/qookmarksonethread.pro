@@ -33,6 +33,7 @@ INCLUDEPATH    +=                                           \
     $$PWD/src/manager                                       \
     $$PWD/src/bookmarkimport                                \
     $$PWD/src/tagitemmodel                                  \
+    $$PWD/src/widget/bookmarkview                           \
 
 
 HEADERS        +=                                           \
@@ -49,7 +50,10 @@ HEADERS        +=                                           \
     src/manager/cbookmarkfilter.h \
     src/consts.h \
     src/manager/cabstractbookmarkfilter.h \
-    src/manager/cbookmarkfilterdatamodel.h
+    src/manager/cbookmarkfilterdatamodel.h \
+    src/widget/bookmarkview/cbookmarkfavoritesdelegate.h \
+    src/widget/bookmarkview/cbookmarkreadlaterdelegate.h \
+    src/widget/bookmarkview/cbookmarkfilteritemmodel.h
 
 SOURCES        +=                                           \
     src/mainwindow.cpp \
@@ -64,12 +68,16 @@ SOURCES        +=                                           \
     src/manager/cmanager.cpp \
     src/manager/cbookmarkfilter.cpp \
     src/manager/cabstractbookmarkfilter.cpp \
-    src/manager/cbookmarkfilterdatamodel.cpp
+    src/manager/cbookmarkfilterdatamodel.cpp \
+    src/widget/bookmarkview/cbookmarkfavoritesdelegate.cpp \
+    src/widget/bookmarkview/cbookmarkreadlaterdelegate.cpp \
+    src/widget/bookmarkview/cbookmarkfilteritemmodel.cpp
 
 FORMS          +=                                           \
     src/mainwindow.ui
 
 RESOURCES      +=                                           \
+    qrc/icons.qrc
 
 OTHER_FILES    +=                                           \
 
