@@ -13,6 +13,8 @@
 #include "cbookmarkfilterdatamodel.h"
 #include "cbookmarkfilter.h"
 #include "cbookmarkfilteritemmodel.h"
+#include "cnavigationitemmodel.h"
+
 
 void printTagItem(const QString &path, CTagItem *item)
 {
@@ -111,6 +113,10 @@ MainWindow::MainWindow(QWidget *parent) :
     CBookmark data = mgr->bookmarkMgr()->at(0)->data();
     data.setTrash(true);
     mgr->bookmarkMgr()->at(0)->setData(data);
+
+    CNavigationItemModel *navItemModel = new CNavigationItemModel(mgr->tagMgr(), this);
+    ui->treeView_tags->setModel(navItemModel);
+
 }
 
 MainWindow::~MainWindow()
