@@ -42,8 +42,32 @@ CNavigationItemModel::~CNavigationItemModel()
 
 void CNavigationItemModel::setTagMgr(CTagMgr *tagMgr)
 {
-    m_tagMgr = tagMgr;
+    if (m_tagMgr)
+        disconnect(m_tagMgr, 0, this, 0);
 
+    m_tagMgr = tagMgr;
+    if (m_tagMgr)
+    {
+        connect(m_tagMgr, SIGNAL(aboutToBeInserted(CTagItem*,int,int)),
+                this, SLOT(tagMgr_aboutToBeInserted(CTagItem*,int,int)));
+        connect(m_tagMgr, SIGNAL(inserted(CTagItem*,int,int)),
+                this, SLOT(tagMgr_inserted(CTagItem*,int,int)));
+        connect(m_tagMgr, SIGNAL(aboutToBeRemoved(CTagItem*,int,int)),
+                this, SLOT(tagMgr_aboutToBeRemoved(CTagItem*,int,int)));
+        connect(m_tagMgr, SIGNAL(removed(CTagItem*,int,int)),
+                this, SLOT(tagMgr_removed(CTagItem*,int,int)));
+        connect(m_tagMgr, SIGNAL(aboutToBeMoved(CTagItem*,int,int,CTagItem*,int)),
+                this, SLOT(tagMgr_aboutToBeMoved(CTagItem*,int,int,CTagItem*,int)));
+        connect(m_tagMgr, SIGNAL(moved(CTagItem*,int,int,CTagItem*,int)),
+                this, SLOT(tagMgr_moved(CTagItem*,int,int,CTagItem*,int)));
+        connect(m_tagMgr, SIGNAL(dataChanged(CTagItem*)),
+                this, SLOT(tagMgr_dataChanged(CTagItem*)));
+        connect(m_tagMgr, SIGNAL(bookmarksChanged(CTagItem*)),
+                this, SLOT(tagMgr_bookmarksChanged(CTagItem*)));
+        connect(m_tagMgr, SIGNAL(destroyed()), this, SLOT(tagMgr_destroyed()));
+    }
+
+    reset();
 }
 
 QVariant CNavigationItemModel::data(const QModelIndex &index, int role) const
@@ -54,17 +78,19 @@ QVariant CNavigationItemModel::data(const QModelIndex &index, int role) const
     if (!index.parent().isValid())
         return topLevelData(index, role);
 
-//    CTagItem *item = static_cast<CTagItem *>(index.internalPointer());
-//    if (role == Qt::DisplayRole || role == Qt::ToolTipRole)
-//        if (index.column() == 0)
-//            return item->data().name();
+    CTagItem *item = static_cast<CTagItem *>(index.internalPointer());
+    if (role == Qt::DisplayRole || role == Qt::ToolTipRole)
+        if (index.column() == 0)
+            return QString("%1 (%2)")
+                    .arg(item->data().name())
+                    .arg(item->bookmarks().count());
 
-////    if (role == Qt::DecorationRole)
-////        if (index.column() == 0)
-////            return item->icon();
+    if (role == Qt::DecorationRole)
+        if (index.column() == 0)
+            return QIcon(":/icons/bookmark-tag.png");
 
-//    if (role == Qt::UserRole)
-//        return QVariant::fromValue(index.internalPointer());
+    if (role == Qt::UserRole)
+        return QVariant::fromValue(index.internalPointer());
 
     return QVariant();
 }
@@ -196,17 +222,16 @@ QModelIndex CNavigationItemModel::index(int row, int column,
         return QModelIndex();
 
     if (!parent.isValid())
-        return createIndex(row, column, 0);
+    {
+        if (m_topLevelItems.at(row) == BookmarkRoot)
+            return createIndex(row, column, m_tagMgr->rootItem());
+        else
+            return createIndex(row, column, 0);
+    }
 
-    //    CTagItem *parentItem = m_rootItem;
-    //    if (parent.isValid())
-    //        parentItem = static_cast<CTagItem *>(parent.internalPointer());
 
-    //    CTagItem *childItem = parentItem->child(row);
-    //    if (childItem)
-    //        return createIndex(row, column, childItem);
-
-    return QModelIndex();
+    CTagItem *parentItem = static_cast<CTagItem *>(parent.internalPointer());
+    return createIndex(row, column, parentItem->at(row));
 }
 
 
@@ -215,18 +240,14 @@ QModelIndex CNavigationItemModel::parent(const QModelIndex &index) const
     if (!index.isValid() || !m_tagMgr)
         return QModelIndex();
 
-    if (index.internalPointer() == 0)
+    if (index.internalPointer() == 0
+            || index.internalPointer() == m_tagMgr->rootItem())
         return QModelIndex();
 
-    return QModelIndex();
+    CTagItem *childItem = static_cast<CTagItem *>(index.internalPointer());
+    CTagItem *parentItem = childItem->parent();
 
-    //    CTagItem *childItem = static_cast<CTagItem *>(index.internalPointer());
-    //    CTagItem *parentItem = childItem->parent();
-
-    //    if (parentItem == m_rootItem)
-    //        return QModelIndex();
-
-    //    return createIndex(parentItem->index(), 0, parentItem);
+    return createIndex(parentItem->index(), 0, parentItem);
 }
 
 
@@ -238,13 +259,11 @@ int CNavigationItemModel::rowCount(const QModelIndex &parent) const
     if (!parent.isValid())
         return m_topLevelItems.count();
 
-    return 0;
+    CTagItem *parentItem = static_cast<CTagItem *>(parent.internalPointer());
+    if (parentItem == 0)
+        return 0;
 
-    //    CTagItem *parentItem = m_rootItem;
-    //    if (parent.isValid())
-    //        parentItem = static_cast<CTagItem *>(parent.internalPointer());
-
-    //    return parentItem->childCount();
+    return parentItem->count();
 }
 
 
@@ -302,6 +321,7 @@ void CNavigationItemModel::tagMgr_bookmarksChanged(CTagItem *item)
 
 void CNavigationItemModel::tagMgr_destroyed()
 {
+    m_tagMgr = 0;
 }
 
 void CNavigationItemModel::initFirstLevelItems()
