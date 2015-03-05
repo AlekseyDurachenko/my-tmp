@@ -311,18 +311,17 @@ void CNavigationItemModel::tagMgr_moved(CTagItem *srcParent, int srcFirst,
 
 void CNavigationItemModel::tagMgr_dataChanged(CTagItem *item)
 {
-    CTagItem *parent = item->parent();
-    if (parent)
+    if (item->parent())
     {
         int index = item->index();
-        emit dataChanged(createIndex(index, 0, parent),
-                         createIndex(index,  columnCount()-1, parent));
+        emit dataChanged(createIndex(index, 0, item),
+                         createIndex(index,  columnCount()-1, item));
     }
     else
     {
         int index = m_topLevelItems.indexOf(BookmarkRoot);
-        emit dataChanged(createIndex(index, 0, 0),
-                         createIndex(index,  columnCount()-1, 0));
+        emit dataChanged(createIndex(index, 0, item),
+                         createIndex(index,  columnCount()-1, item));
     }
 }
 
