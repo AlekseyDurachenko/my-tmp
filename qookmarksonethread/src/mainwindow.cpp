@@ -128,6 +128,11 @@ void MainWindow::on_action_Quit_triggered()
 {
     filter->setInclusiveOption(Bookmark::FilterOptions(Bookmark::Trash));
     filter->update();
+
+    CTag data = mgr->tagMgr()->rootItem()->at(0)->data();
+    data.setName("test");
+    mgr->tagMgr()->rootItem()->at(0)->setData(data);
+
 }
 
 void MainWindow::on_action_Save_triggered()

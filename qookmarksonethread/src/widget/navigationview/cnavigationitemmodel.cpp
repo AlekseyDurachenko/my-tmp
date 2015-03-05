@@ -311,6 +311,19 @@ void CNavigationItemModel::tagMgr_moved(CTagItem *srcParent, int srcFirst,
 
 void CNavigationItemModel::tagMgr_dataChanged(CTagItem *item)
 {
+    CTagItem *parent = item->parent();
+    if (parent)
+    {
+        int index = item->index();
+        emit dataChanged(createIndex(index, 0, parent),
+                         createIndex(index,  columnCount()-1, parent));
+    }
+    else
+    {
+        int index = m_topLevelItems.indexOf(BookmarkRoot);
+        emit dataChanged(createIndex(index, 0, 0),
+                         createIndex(index,  columnCount()-1, 0));
+    }
 }
 
 
@@ -318,6 +331,45 @@ void CNavigationItemModel::tagMgr_bookmarksChanged(CTagItem *item)
 {
 }
 
+//void CNavigationItemModel::bookmarkmgr_tagInserted(CTagItem *parent, int index)
+//{
+//    if (parent == m_rootItem)
+//        beginInsertRows(QModelIndex(), index, index);
+//    else
+//        beginInsertRows(createIndex(parent->index(), 0, parent), index, index);
+//    endInsertRows();
+//}
+
+//void CNavigationItemModel::bookmarkmgr_tagRemoved(CTagItem *parent, int index)
+//{
+//    if (parent == m_rootItem)
+//        beginRemoveRows(QModelIndex(), index, index);
+//    else
+//        beginRemoveRows(createIndex(parent->index(), 0, parent), index, index);
+//    endRemoveRows();
+//}
+
+//void CNavigationItemModel::bookmarkmgr_tagMoved(CTagItem *oldParent,
+//        int oldIndex, CTagItem *newParent, int newIndex)
+//{
+//    QModelIndex ox;
+//    QModelIndex nx;
+//    if (oldParent != m_rootItem)
+//        ox = createIndex(oldParent->index(), 0, oldParent);
+//    if (newParent != m_rootItem)
+//        nx = createIndex(newParent->index(), 0, newParent);
+
+//    beginMoveRows(ox, oldIndex, oldIndex, nx, newIndex);
+//    endMoveRows();
+
+
+//}
+
+//void CNavigationItemModel::bookmarkmgr_tagDataChanged(CTagItem *parent, int index)
+//{
+//    emit dataChanged(createIndex(index, 0, parent),
+//                     createIndex(index,  columnCount()-1, parent));
+//}
 
 void CNavigationItemModel::tagMgr_destroyed()
 {
