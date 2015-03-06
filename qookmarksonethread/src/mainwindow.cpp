@@ -133,10 +133,12 @@ void MainWindow::on_action_Quit_triggered()
     //data.setName("test");
     //mgr->tagMgr()->rootItem()->at(0)->setData(data);
 
-    CTag tag;
-    tag.setName("xzxzxz");
-    mgr->tagMgr()->rootItem()->add(tag);
-    mgr->tagMgr()->rootItem()->at(0)->add(tag);
+//    CTag tag;
+//    tag.setName("xzxzxz");
+//    mgr->tagMgr()->rootItem()->add(tag);
+//    mgr->tagMgr()->rootItem()->at(0)->add(tag);
+
+//    mgr->tagMgr()->rootItem()->at(9)->removeAt(1);
 }
 
 void MainWindow::on_action_Save_triggered()

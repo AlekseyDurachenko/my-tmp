@@ -299,6 +299,11 @@ void CNavigationItemModel::tagMgr_aboutToBeRemoved(CTagItem *parent,
 void CNavigationItemModel::tagMgr_removed(CTagItem *parent,
         int first, int last)
 {
+    if (parent == m_tagMgr->rootItem())
+        beginRemoveRows(createIndex(m_topLevelItems.indexOf(BookmarkRoot), 0, parent), first, last);
+    else
+        beginRemoveRows(createIndex(parent->index(), 0, parent), first, last);
+    endRemoveRows();
 }
 
 
@@ -311,6 +316,7 @@ void CNavigationItemModel::tagMgr_aboutToBeMoved(CTagItem *srcParent,
 void CNavigationItemModel::tagMgr_moved(CTagItem *srcParent, int srcFirst,
         int srcLast, CTagItem *dstParent, int dstIndex)
 {
+
 }
 
 
