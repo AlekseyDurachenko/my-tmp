@@ -282,6 +282,11 @@ void CNavigationItemModel::tagMgr_aboutToBeInserted(CTagItem *parent,
 void CNavigationItemModel::tagMgr_inserted(CTagItem *parent,
         int first, int last)
 {
+    if (parent == m_tagMgr->rootItem())
+        beginInsertRows(createIndex(m_topLevelItems.indexOf(BookmarkRoot), 0, parent), first, last);
+    else
+        beginInsertRows(createIndex(parent->index(), 0, parent), first, last);
+    endInsertRows();
 }
 
 
@@ -364,11 +369,6 @@ void CNavigationItemModel::tagMgr_bookmarksChanged(CTagItem *item)
 
 //}
 
-//void CNavigationItemModel::bookmarkmgr_tagDataChanged(CTagItem *parent, int index)
-//{
-//    emit dataChanged(createIndex(index, 0, parent),
-//                     createIndex(index,  columnCount()-1, parent));
-//}
 
 void CNavigationItemModel::tagMgr_destroyed()
 {
