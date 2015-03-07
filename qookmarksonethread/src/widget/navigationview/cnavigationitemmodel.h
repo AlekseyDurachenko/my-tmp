@@ -16,6 +16,8 @@
 #define CNAVIGATIONITEMMODEL_H
 
 #include <QAbstractItemModel>
+#include <QVector>
+#include <QHash>
 class CTagMgr;
 class CTagItem;
 
@@ -57,15 +59,19 @@ private slots:
     void tagMgr_bookmarksChanged(CTagItem *item);
     void tagMgr_destroyed();
 private:
-    enum TopLevelItem { Favorite, Rated, ReadLater, BookmarkRoot, Trash };
+    enum TopLevelItem { Favorites, Rated, ReadLater, BookmarksRoot, Trash };
 private:
-    void initFirstLevelItems();
+    void initTopLevelItems();
+    void initTopLevelCounters();
+    int bookmarksIndex() const;
     QVariant topLevelData(const QModelIndex &index, int role) const;
     QString topLevelName(TopLevelItem item) const;
     QIcon topLevelIcon(TopLevelItem item) const;
+    void recalcTopLevelCounters();
 private:
     CTagMgr *m_tagMgr;
-    QList<TopLevelItem> m_topLevelItems;
+    QVector<TopLevelItem> m_topLevelItems;
+    QHash<TopLevelItem, int> m_topLevelCounter;
 };
 
 CTagMgr *CNavigationItemModel::tagMgr() const

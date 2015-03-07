@@ -99,7 +99,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
     bookmarkImportChromium(mgr, QDir::homePath() + "/.config/chromium/Default/Bookmarks");
 
-
+    CBookmark data1 = mgr->bookmarkMgr()->at(1)->data();
+    data1.setTrash(true);
+    mgr->bookmarkMgr()->at(1)->setData(data1);
 
     foreach (CBookmarkItem *item, mgr->bookmarkMgr()->bookmarks())
     {
