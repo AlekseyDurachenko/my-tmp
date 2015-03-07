@@ -68,14 +68,14 @@ void CTagMgr::callbackAboutToBeMoved(CTagItem *sourceParent, int sourceFirst,
         int sourceLast, CTagItem *destinationParent, int destinationIndex)
 {
     emit aboutToBeMoved(sourceParent, sourceFirst, sourceLast,
-                      destinationParent, destinationIndex);
+                        destinationParent, destinationIndex);
 }
 
 void CTagMgr::callbackMoved(CTagItem *sourceParent, int sourceFirst,
         int sourceLast, CTagItem *destinationParent, int destinationIndex)
 {
-    emit aboutToBeMoved(sourceParent, sourceFirst, sourceLast,
-                      destinationParent, destinationIndex);
+    emit moved(sourceParent, sourceFirst, sourceLast,
+               destinationParent, destinationIndex);
 }
 
 void CTagMgr::callbackMoved(CTagItem *item)

@@ -32,6 +32,7 @@ public:
     inline CTagMgr *tagMgr() const;
     inline CTagItem *parent() const;
     inline int index() const;
+    inline bool isRoot() const;
 
     inline const QSet<CBookmarkItem *> &bookmarks() const;
     QSet<CBookmarkItem *> bookmarksRecursively() const;
@@ -93,6 +94,11 @@ CTagItem *CTagItem::parent() const
 int CTagItem::index() const
 {
     return (m_parent) ? (m_parent->indexOf(const_cast<CTagItem *>(this))) : (0);
+}
+
+bool CTagItem::isRoot() const
+{
+    return (m_parent) ? (false) : (true);
 }
 
 const QSet<CBookmarkItem *> &CTagItem::bookmarks() const

@@ -15,7 +15,7 @@
 TARGET          = qookmarksonethread
 TEMPLATE        = app
 
-CONFIG         += console debug_and_release
+CONFIG         += console debug #_and_release
 QT             += core gui network webkit xml
 
 DESTDIR         = bin

@@ -129,16 +129,21 @@ void MainWindow::on_action_Quit_triggered()
     //filter->setInclusiveOption(Bookmark::FilterOptions(Bookmark::Trash));
     //filter->update();
 
-    //CTag data = mgr->tagMgr()->rootItem()->at(0)->data();
-    //data.setName("test");
-    //mgr->tagMgr()->rootItem()->at(0)->setData(data);
+    CTag data = mgr->tagMgr()->rootItem()->at(0)->data();
+    data.setName("test");
+    mgr->tagMgr()->rootItem()->at(0)->setData(data);
+    mgr->tagMgr()->rootItem()->at(9)->at(0)->setData(data);
 
 //    CTag tag;
 //    tag.setName("xzxzxz");
 //    mgr->tagMgr()->rootItem()->add(tag);
 //    mgr->tagMgr()->rootItem()->at(0)->add(tag);
 
-//    mgr->tagMgr()->rootItem()->at(9)->removeAt(1);
+    //mgr->tagMgr()->rootItem()->removeAt(0);
+
+    //mgr->tagMgr()->rootItem()->at(9)->at(1)->moveTo(mgr->tagMgr()->rootItem());
+    //mgr->tagMgr()->rootItem()->at(6)->moveTo(mgr->tagMgr()->rootItem()->at(0));
+    //mgr->tagMgr()->rootItem()->at(9)->at(0)->moveTo(mgr->tagMgr()->rootItem()->at(0));
 }
 
 void MainWindow::on_action_Save_triggered()
