@@ -24,6 +24,11 @@ CAbstractBookmarkFilter::~CAbstractBookmarkFilter()
 {
 }
 
+/*!
+ * \brief CAbstractBookmarkFilter::update
+ *
+ * you should call this method after your filter is changed
+ */
 void CAbstractBookmarkFilter::update()
 {
     emit changed();
