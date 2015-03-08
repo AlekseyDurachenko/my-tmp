@@ -84,9 +84,10 @@ void CTagMgr::callbackMoved(CTagItem *item)
         m_mgr->bookmarkMgr()->callbackTagsChanged(bookmark);
 }
 
-void CTagMgr::callbackDataChanged(CTagItem *item)
+void CTagMgr::callbackDataChanged(CTagItem *item, const CTag &oldTag,
+        const CTag &newTag)
 {
-    emit dataChanged(item);
+    emit dataChanged(item, oldTag, newTag);
 }
 
 void CTagMgr::callbackBookmarksChanged(CTagItem *item)

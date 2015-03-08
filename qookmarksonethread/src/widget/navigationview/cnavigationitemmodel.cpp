@@ -65,7 +65,7 @@ void CNavigationItemModel::setManager(CManager *manager)
                 this, SLOT(tagMgr_aboutToBeMoved(CTagItem*,int,int,CTagItem*,int)));
         connect(m_manager->tagMgr(), SIGNAL(moved(CTagItem*,int,int,CTagItem*,int)),
                 this, SLOT(tagMgr_moved(CTagItem*,int,int,CTagItem*,int)));
-        connect(m_manager->tagMgr(), SIGNAL(dataChanged(CTagItem*)),
+        connect(m_manager->tagMgr(), SIGNAL(dataChanged(CTagItem*,CTag,CTag)),
                 this, SLOT(tagMgr_dataChanged(CTagItem*)));
         connect(m_manager->tagMgr(), SIGNAL(bookmarksChanged(CTagItem*)),
                 this, SLOT(tagMgr_bookmarksChanged(CTagItem*)));

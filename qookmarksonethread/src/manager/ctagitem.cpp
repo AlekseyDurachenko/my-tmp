@@ -179,8 +179,9 @@ bool CTagItem::setData(const CTag &data)
 
     if (m_data != data)
     {
+        CTag old = m_data;
         m_data = data;
-        m_tagMgr->callbackDataChanged(this);
+        m_tagMgr->callbackDataChanged(this, old, data);
     }
 
     return true;
