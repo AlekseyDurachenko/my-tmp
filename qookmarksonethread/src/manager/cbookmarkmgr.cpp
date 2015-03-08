@@ -102,9 +102,10 @@ void CBookmarkMgr::removeAll()
     emit removed(0, last);
 }
 
-void CBookmarkMgr::callbackDataChanged(CBookmarkItem *item)
+void CBookmarkMgr::callbackDataChanged(CBookmarkItem *item,
+        const CBookmark& oldData, const CBookmark &newData)
 {
-    emit dataChanged(item);
+    emit dataChanged(item, oldData, newData);
 }
 
 void CBookmarkMgr::callbackTagsChanged(CBookmarkItem *item)

@@ -49,10 +49,12 @@ signals:
     void inserted(int first, int last);
     void aboutToBeRemoved(int first, int last);
     void removed(int first, int last);
-    void dataChanged(CBookmarkItem *item);
+    void dataChanged(CBookmarkItem *item, const CBookmark& oldData,
+                     const CBookmark &newData);
     void tagsChanged(CBookmarkItem *item);
 private:
-    void callbackDataChanged(CBookmarkItem *item);
+    void callbackDataChanged(CBookmarkItem *item, const CBookmark& oldData,
+                             const CBookmark &newData);
     void callbackTagsChanged(CBookmarkItem *item);
 private:
     QList<CBookmarkItem *> m_bookmarkItems;

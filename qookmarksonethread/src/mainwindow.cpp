@@ -103,20 +103,20 @@ MainWindow::MainWindow(QWidget *parent) :
     data1.setTrash(true);
     mgr->bookmarkMgr()->at(1)->setData(data1);
 
-    foreach (CBookmarkItem *item, mgr->bookmarkMgr()->bookmarks())
-    {
-        qDebug() << item->data().url();
-        foreach (CTagItem *tag, item->tags())
-            qDebug() << "TAG: " << tag->path();
-    }
+//    foreach (CBookmarkItem *item, mgr->bookmarkMgr()->bookmarks())
+//    {
+//        qDebug() << item->data().url();
+//        foreach (CTagItem *tag, item->tags())
+//            qDebug() << "TAG: " << tag->path();
+//    }
 
-    printTagItem("", mgr->tagMgr()->rootItem());
+//    printTagItem("", mgr->tagMgr()->rootItem());
 
     CBookmark data = mgr->bookmarkMgr()->at(0)->data();
     data.setTrash(true);
     mgr->bookmarkMgr()->at(0)->setData(data);
 
-    CNavigationItemModel *navItemModel = new CNavigationItemModel(mgr->tagMgr(), this);
+    CNavigationItemModel *navItemModel = new CNavigationItemModel(mgr, this);
     ui->treeView_tags->setModel(navItemModel);
 
 }
@@ -136,6 +136,9 @@ void MainWindow::on_action_Quit_triggered()
     mgr->tagMgr()->rootItem()->at(0)->setData(data);
     mgr->tagMgr()->rootItem()->at(9)->at(0)->setData(data);
 
+
+
+
 //    CTag tag;
 //    tag.setName("xzxzxz");
 //    mgr->tagMgr()->rootItem()->add(tag);
@@ -150,7 +153,7 @@ void MainWindow::on_action_Quit_triggered()
 
 void MainWindow::on_action_Save_triggered()
 {
-    CBookmark data = mgr->bookmarkMgr()->at(1)->data();
+    CBookmark data = mgr->bookmarkMgr()->at(14)->data();
     data.setTrash(true);
-    mgr->bookmarkMgr()->at(1)->setData(data);
+    mgr->bookmarkMgr()->at(14)->setData(data);
 }

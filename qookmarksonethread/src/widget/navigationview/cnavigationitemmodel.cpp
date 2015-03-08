@@ -16,60 +16,63 @@
 #include <QMimeData>
 #include <QStringList>
 #include <QIcon>
+#include "cmanager.h"
 #include "ctagmgr.h"
 #include "ctagitem.h"
 #include "cbookmarkmgr.h"
 #include "cbookmarkitem.h"
-#include "cmanager.h"
 #include <QDebug>
 
 
 CNavigationItemModel::CNavigationItemModel(QObject *parent) :
     QAbstractItemModel(parent)
 {
-    m_tagMgr = 0;
+    m_manager = 0;
     initTopLevelItems();
     initTopLevelCounters();
 }
 
-CNavigationItemModel::CNavigationItemModel(CTagMgr *tagMgr, QObject *parent) :
+CNavigationItemModel::CNavigationItemModel(CManager *manager, QObject *parent) :
     QAbstractItemModel(parent)
 {
-    m_tagMgr = 0;
+    m_manager = 0;
     initTopLevelItems();
     initTopLevelCounters();
-    setTagMgr(tagMgr);
+    setManager(manager);
 }
 
 CNavigationItemModel::~CNavigationItemModel()
 {
 }
 
-void CNavigationItemModel::setTagMgr(CTagMgr *tagMgr)
+void CNavigationItemModel::setManager(CManager *manager)
 {
-    if (m_tagMgr)
-        disconnect(m_tagMgr, 0, this, 0);
+    if (m_manager)
+        disconnect(m_manager, 0, this, 0);
 
-    m_tagMgr = tagMgr;
-    if (m_tagMgr)
+    m_manager = manager;
+    if (m_manager)
     {
-        connect(m_tagMgr, SIGNAL(aboutToBeInserted(CTagItem*,int,int)),
+        connect(m_manager->tagMgr(), SIGNAL(aboutToBeInserted(CTagItem*,int,int)),
                 this, SLOT(tagMgr_aboutToBeInserted(CTagItem*,int,int)));
-        connect(m_tagMgr, SIGNAL(inserted(CTagItem*,int,int)),
+        connect(m_manager->tagMgr(), SIGNAL(inserted(CTagItem*,int,int)),
                 this, SLOT(tagMgr_inserted(CTagItem*,int,int)));
-        connect(m_tagMgr, SIGNAL(aboutToBeRemoved(CTagItem*,int,int)),
+        connect(m_manager->tagMgr(), SIGNAL(aboutToBeRemoved(CTagItem*,int,int)),
                 this, SLOT(tagMgr_aboutToBeRemoved(CTagItem*,int,int)));
-        connect(m_tagMgr, SIGNAL(removed(CTagItem*,int,int)),
+        connect(m_manager->tagMgr(), SIGNAL(removed(CTagItem*,int,int)),
                 this, SLOT(tagMgr_removed(CTagItem*,int,int)));
-        connect(m_tagMgr, SIGNAL(aboutToBeMoved(CTagItem*,int,int,CTagItem*,int)),
+        connect(m_manager->tagMgr(), SIGNAL(aboutToBeMoved(CTagItem*,int,int,CTagItem*,int)),
                 this, SLOT(tagMgr_aboutToBeMoved(CTagItem*,int,int,CTagItem*,int)));
-        connect(m_tagMgr, SIGNAL(moved(CTagItem*,int,int,CTagItem*,int)),
+        connect(m_manager->tagMgr(), SIGNAL(moved(CTagItem*,int,int,CTagItem*,int)),
                 this, SLOT(tagMgr_moved(CTagItem*,int,int,CTagItem*,int)));
-        connect(m_tagMgr, SIGNAL(dataChanged(CTagItem*)),
+        connect(m_manager->tagMgr(), SIGNAL(dataChanged(CTagItem*)),
                 this, SLOT(tagMgr_dataChanged(CTagItem*)));
-        connect(m_tagMgr, SIGNAL(bookmarksChanged(CTagItem*)),
+        connect(m_manager->tagMgr(), SIGNAL(bookmarksChanged(CTagItem*)),
                 this, SLOT(tagMgr_bookmarksChanged(CTagItem*)));
-        connect(m_tagMgr, SIGNAL(destroyed()), this, SLOT(tagMgr_destroyed()));
+        connect(m_manager->bookmarkMgr(), SIGNAL(dataChanged(CBookmarkItem*,CBookmark,CBookmark)),
+                this, SLOT(bookmarkMgr_dataChanged(CBookmarkItem*,CBookmark, CBookmark)));
+        connect(m_manager->tagMgr(), SIGNAL(destroyed()),
+                this, SLOT(manager_destroyed()));
     }
 
     recalcTopLevelCounters();
@@ -78,7 +81,7 @@ void CNavigationItemModel::setTagMgr(CTagMgr *tagMgr)
 
 QVariant CNavigationItemModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid() || !m_tagMgr)
+    if (!index.isValid() || !m_manager)
         return QVariant();
 
     if (!index.parent().isValid())
@@ -148,13 +151,13 @@ QVariant CNavigationItemModel::headerData(int section,
 QModelIndex CNavigationItemModel::index(int row, int column,
         const QModelIndex &parent) const
 {
-    if (!hasIndex(row, column, parent) || !m_tagMgr)
+    if (!hasIndex(row, column, parent) || !m_manager)
         return QModelIndex();
 
     if (!parent.isValid())
     {
-        if (m_topLevelItems.at(row) == BookmarksRoot)
-            return createIndex(row, column, m_tagMgr->rootItem());
+        if (m_topLevelItems.at(row) == BookmarkRoot)
+            return createIndex(row, column, m_manager->tagMgr()->rootItem());
         else
             return createIndex(row, column, 0);
     }
@@ -165,17 +168,17 @@ QModelIndex CNavigationItemModel::index(int row, int column,
 
 QModelIndex CNavigationItemModel::parent(const QModelIndex &index) const
 {
-    if (!index.isValid() || !m_tagMgr)
+    if (!index.isValid() || !m_manager)
         return QModelIndex();
 
     if (index.internalPointer() == 0
-            || index.internalPointer() == m_tagMgr->rootItem())
+            || index.internalPointer() == m_manager->tagMgr()->rootItem())
         return QModelIndex();
 
     CTagItem *childItem = static_cast<CTagItem *>(index.internalPointer());
     CTagItem *parentItem = childItem->parent();
-    if (parentItem == m_tagMgr->rootItem())
-        return createIndex(bookmarksIndex(), 0, parentItem);
+    if (parentItem == m_manager->tagMgr()->rootItem())
+        return createIndex(bookmarkRootIndex(), 0, parentItem);
 
     return createIndex(parentItem->index(), 0, parentItem);
 }
@@ -185,7 +188,7 @@ int CNavigationItemModel::rowCount(const QModelIndex &parent) const
     if (!parent.isValid())
         return m_topLevelItems.count();
 
-    if (parent.column() != 0 || !m_tagMgr)
+    if (parent.column() != 0 || !m_manager)
         return 0;
 
     CTagItem *parentItem = static_cast<CTagItem *>(parent.internalPointer());
@@ -197,14 +200,16 @@ int CNavigationItemModel::rowCount(const QModelIndex &parent) const
 
 int CNavigationItemModel::columnCount(const QModelIndex &parent) const
 {
+    Q_UNUSED(parent);
+
     return 1;
 }
 
 void CNavigationItemModel::tagMgr_aboutToBeInserted(CTagItem *parent,
         int first, int last)
 {
-    if (parent == m_tagMgr->rootItem())
-        beginInsertRows(createIndex(bookmarksIndex(), 0, parent), first, last);
+    if (parent == m_manager->tagMgr()->rootItem())
+        beginInsertRows(createIndex(bookmarkRootIndex(), 0, parent), first, last);
     else
         beginInsertRows(createIndex(parent->index(), 0, parent), first, last);
 }
@@ -216,14 +221,15 @@ void CNavigationItemModel::tagMgr_inserted(CTagItem *parent,
     Q_UNUSED(first);
     Q_UNUSED(last);
 
-    endInsertRows();    
+    endInsertRows();
+    updateBookmarkRootItem();
 }
 
 void CNavigationItemModel::tagMgr_aboutToBeRemoved(CTagItem *parent,
         int first, int last)
 {
-    if (parent == m_tagMgr->rootItem())
-        beginRemoveRows(createIndex(bookmarksIndex(), 0, parent), first, last);
+    if (parent == m_manager->tagMgr()->rootItem())
+        beginRemoveRows(createIndex(bookmarkRootIndex(), 0, parent), first, last);
     else
         beginRemoveRows(createIndex(parent->index(), 0, parent), first, last);
 }
@@ -236,16 +242,17 @@ void CNavigationItemModel::tagMgr_removed(CTagItem *parent,
     Q_UNUSED(last);
 
     endRemoveRows();
+    updateBookmarkRootItem();
 }
 
 void CNavigationItemModel::tagMgr_aboutToBeMoved(CTagItem *srcParent,
         int srcFirst, int srcLast, CTagItem *dstParent, int dstIndex)
 {
-    QModelIndex si = createIndex(bookmarksIndex(), 0, m_tagMgr->rootItem());
-    QModelIndex di = createIndex(bookmarksIndex(), 0, m_tagMgr->rootItem());
-    if (srcParent != m_tagMgr->rootItem())
+    QModelIndex si = createIndex(bookmarkRootIndex(), 0, m_manager->tagMgr()->rootItem());
+    QModelIndex di = createIndex(bookmarkRootIndex(), 0, m_manager->tagMgr()->rootItem());
+    if (srcParent != m_manager->tagMgr()->rootItem())
         si = createIndex(srcParent->index(), 0, srcParent);
-    if (dstParent != m_tagMgr->rootItem())
+    if (dstParent != m_manager->tagMgr()->rootItem())
         di = createIndex(dstParent->index(), 0, dstParent);
     beginMoveRows(si, srcFirst, srcLast, di, dstIndex);
 }
@@ -266,7 +273,7 @@ void CNavigationItemModel::tagMgr_dataChanged(CTagItem *item)
 {
     if (item->isRoot())
     {
-        int index = bookmarksIndex();
+        int index = bookmarkRootIndex();
         emit dataChanged(createIndex(index, 0, item),
                          createIndex(index,  columnCount()-1, item));
     }
@@ -283,9 +290,52 @@ void CNavigationItemModel::tagMgr_bookmarksChanged(CTagItem *item)
     tagMgr_dataChanged(item);
 }
 
-void CNavigationItemModel::tagMgr_destroyed()
+void CNavigationItemModel::bookmarkMgr_dataChanged(CBookmarkItem *item,
+        const CBookmark &oldData, const CBookmark &newData)
 {
-    m_tagMgr = 0;
+    Q_UNUSED(item);
+
+    if (oldData.isFavorite() == newData.isFavorite()
+            && oldData.isReadLater() == newData.isReadLater()
+            && oldData.isTrash() == newData.isTrash()
+            && oldData.rating() == newData.rating())
+        return;
+
+    if (oldData.isTrash())
+    {
+        m_topLevelCounters[Trash] -= 1;
+    }
+    else
+    {
+        if (oldData.isFavorite())
+            m_topLevelCounters[Favorites] -= 1;
+        if (oldData.rating())
+            m_topLevelCounters[Rated] -= 1;
+        if (oldData.isReadLater())
+            m_topLevelCounters[ReadLater] -= 1;
+    }
+
+    if (newData.isTrash())
+    {
+        m_topLevelCounters[Trash] += 1;
+    }
+    else
+    {
+        if (newData.isFavorite())
+            m_topLevelCounters[Favorites] += 1;
+        if (newData.rating())
+            m_topLevelCounters[Rated] += 1;
+        if (newData.isReadLater())
+            m_topLevelCounters[ReadLater] += 1;
+    }
+
+    emit dataChanged(createIndex(0, 0, 0),
+                     createIndex(m_topLevelItems.count(), 0, 0));
+}
+
+void CNavigationItemModel::manager_destroyed()
+{
+    m_manager = 0;
 }
 
 void CNavigationItemModel::initTopLevelItems()
@@ -294,22 +344,33 @@ void CNavigationItemModel::initTopLevelItems()
             << Favorites
             << Rated
             << ReadLater
-            << BookmarksRoot
+            << BookmarkRoot
             << Trash;
 }
 
 void CNavigationItemModel::initTopLevelCounters()
 {
-    m_topLevelCounter[Favorites] = 0;
-    m_topLevelCounter[Rated] = 0;
-    m_topLevelCounter[ReadLater] = 0;
-    m_topLevelCounter[BookmarksRoot] = 0;
-    m_topLevelCounter[Trash] = 0;
+    m_topLevelCounters[Favorites] = 0;
+    m_topLevelCounters[Rated] = 0;
+    m_topLevelCounters[ReadLater] = 0;
+    m_topLevelCounters[Trash] = 0;
 }
 
-int CNavigationItemModel::bookmarksIndex() const
+int CNavigationItemModel::bookmarkRootIndex() const
 {
-    return m_topLevelItems.indexOf(BookmarksRoot);
+    return m_topLevelItems.indexOf(BookmarkRoot);
+}
+
+int CNavigationItemModel::bookmarkRootCount() const
+{
+    return m_manager->bookmarkMgr()->count() - m_topLevelCounters[Trash];
+}
+
+void CNavigationItemModel::updateBookmarkRootItem()
+{
+    int index = bookmarkRootIndex();
+    emit dataChanged(createIndex(index, 0, m_manager->tagMgr()->rootItem()),
+                     createIndex(index,  columnCount()-1, m_manager->tagMgr()->rootItem()));
 }
 
 QVariant CNavigationItemModel::topLevelData(const QModelIndex &index,
@@ -331,15 +392,15 @@ QString CNavigationItemModel::topLevelName(CNavigationItemModel::TopLevelItem it
     switch (item)
     {
     case Favorites:
-        return tr("Favorites (%1)").arg(m_topLevelCounter[Favorites]);
+        return tr("Favorites (%1)").arg(m_topLevelCounters[Favorites]);
     case Rated:
-        return tr("Rated Bookmarks (%1)").arg(m_topLevelCounter[Rated]);
+        return tr("Rated Bookmarks (%1)").arg(m_topLevelCounters[Rated]);
     case ReadLater:
-        return tr("Read it Later (%1)").arg(m_topLevelCounter[ReadLater]);
-    case BookmarksRoot:
-        return tr("Bookmarks (%1)").arg(m_topLevelCounter[BookmarksRoot]);
+        return tr("Read it Later (%1)").arg(m_topLevelCounters[ReadLater]);
+    case BookmarkRoot:
+        return tr("Bookmarks (%1)").arg(bookmarkRootCount());
     case Trash:
-        return tr("Trash (%1)").arg(m_topLevelCounter[Trash]);
+        return tr("Trash (%1)").arg(m_topLevelCounters[Trash]);
     }
 
     return QString();
@@ -355,7 +416,7 @@ QIcon CNavigationItemModel::topLevelIcon(CNavigationItemModel::TopLevelItem item
         return QIcon(":/icons/bookmark-rated.png");
     case ReadLater:
         return QIcon(":/icons/bookmark-readlater.png");
-    case BookmarksRoot:
+    case BookmarkRoot:
         return QIcon(":/icons/bookmark-bookmarks.png");
     case Trash:
         return QIcon(":/icons/bookmark-trash.png");
@@ -367,21 +428,19 @@ QIcon CNavigationItemModel::topLevelIcon(CNavigationItemModel::TopLevelItem item
 void CNavigationItemModel::recalcTopLevelCounters()
 {
     initTopLevelCounters();
-    foreach (CBookmarkItem *item, m_tagMgr->mgr()->bookmarkMgr()->bookmarks())
+    foreach (CBookmarkItem *item, m_manager->bookmarkMgr()->bookmarks())
     {
         if (item->data().isTrash())
         {
-            m_topLevelCounter[Trash] += 1;
+            m_topLevelCounters[Trash] += 1;
             continue;
         }
 
         if (item->data().isFavorite())
-            m_topLevelCounter[Favorites] = 1;
+            m_topLevelCounters[Favorites] += 1;
         if (item->data().rating())
-            m_topLevelCounter[Rated] += 1;
+            m_topLevelCounters[Rated] += 1;
         if (item->data().isReadLater())
-            m_topLevelCounter[ReadLater] += 1;
-        if (item->tags().isEmpty())
-            m_topLevelCounter[BookmarksRoot] += 1;
+            m_topLevelCounters[ReadLater] += 1;
     }
 }

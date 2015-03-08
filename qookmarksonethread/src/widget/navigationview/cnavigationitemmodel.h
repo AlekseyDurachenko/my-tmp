@@ -18,8 +18,10 @@
 #include <QAbstractItemModel>
 #include <QVector>
 #include <QHash>
-class CTagMgr;
+#include "cbookmark.h"
+class CManager;
 class CTagItem;
+class CBookmarkItem;
 
 
 class CNavigationItemModel : public QAbstractItemModel
@@ -27,11 +29,11 @@ class CNavigationItemModel : public QAbstractItemModel
     Q_OBJECT
 public:
     explicit CNavigationItemModel(QObject *parent = 0);
-    explicit CNavigationItemModel(CTagMgr *tagMgr, QObject *parent = 0);
+    explicit CNavigationItemModel(CManager *manager, QObject *parent = 0);
     virtual ~CNavigationItemModel();
 
-    inline CTagMgr *tagMgr() const;
-    void setTagMgr(CTagMgr *tagMgr);
+    inline CManager *manager() const;
+    void setManager(CManager *manager);
 
     virtual QVariant data(const QModelIndex &index, int role) const;
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
@@ -57,26 +59,30 @@ private slots:
                       CTagItem *dstParent, int dstIndex);
     void tagMgr_dataChanged(CTagItem *item);
     void tagMgr_bookmarksChanged(CTagItem *item);
-    void tagMgr_destroyed();
+    void bookmarkMgr_dataChanged(CBookmarkItem *item, const CBookmark& oldData,
+                                 const CBookmark &newData);
+    void manager_destroyed();
 private:
-    enum TopLevelItem { Favorites, Rated, ReadLater, BookmarksRoot, Trash };
+    enum TopLevelItem { Favorites, Rated, ReadLater, BookmarkRoot, Trash };
 private:
     void initTopLevelItems();
     void initTopLevelCounters();
-    int bookmarksIndex() const;
+    int bookmarkRootIndex() const;
+    int bookmarkRootCount() const;
+    void updateBookmarkRootItem();
     QVariant topLevelData(const QModelIndex &index, int role) const;
     QString topLevelName(TopLevelItem item) const;
     QIcon topLevelIcon(TopLevelItem item) const;
     void recalcTopLevelCounters();
 private:
-    CTagMgr *m_tagMgr;
+    CManager *m_manager;
     QVector<TopLevelItem> m_topLevelItems;
-    QHash<TopLevelItem, int> m_topLevelCounter;
+    QHash<TopLevelItem, int> m_topLevelCounters;
 };
 
-CTagMgr *CNavigationItemModel::tagMgr() const
+CManager *CNavigationItemModel::manager() const
 {
-    return m_tagMgr;
+    return m_manager;
 }
 
 

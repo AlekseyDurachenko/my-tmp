@@ -52,7 +52,7 @@ void CBookmarkFilterDataModel::setBookmarkMgr(CBookmarkMgr *bookmarkMgr)
                 this, SLOT(bookmarkMgr_aboutToBeRemoved(int,int)));
 //        connect(m_bookmarkMgr, SIGNAL(removed(int,int)),
 //                this, SLOT(bookmarkMgr_removed(int,int)));
-        connect(m_bookmarkMgr, SIGNAL(dataChanged(CBookmarkItem*)),
+        connect(m_bookmarkMgr, SIGNAL(dataChanged(CBookmarkItem*,CBookmark,CBookmark)),
                 this, SLOT(bookmarkMgr_dataChanged(CBookmarkItem*)));
         connect(m_bookmarkMgr, SIGNAL(tagsChanged(CBookmarkItem*)),
                 this, SLOT(bookmarkMgr_tagsChanged(CBookmarkItem*)));

@@ -25,6 +25,7 @@ class CTagItem;
 
 class CBookmarkFilter : public CAbstractBookmarkFilter
 {
+    Q_OBJECT
 public:
     CBookmarkFilter(CTagMgr *tagMgr, QObject *parent = 0);
     virtual ~CBookmarkFilter();
