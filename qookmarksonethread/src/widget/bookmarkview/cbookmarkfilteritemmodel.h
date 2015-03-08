@@ -42,7 +42,9 @@ public:
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
 private slots:
+    void dataModel_aboutToBeInserted(int first, int last);
     void dataModel_inserted(int first, int last);
+    void dataModel_aboutToBeRemoved(int first, int last);
     void dataModel_removed(int first, int last);
     void dataModel_dataChanged(int first, int last);
     void dataModel_reseted();

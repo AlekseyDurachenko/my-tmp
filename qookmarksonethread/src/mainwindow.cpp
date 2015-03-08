@@ -153,7 +153,9 @@ void MainWindow::on_action_Quit_triggered()
 
 void MainWindow::on_action_Save_triggered()
 {
-    CBookmark data = mgr->bookmarkMgr()->at(14)->data();
-    data.setTrash(true);
-    mgr->bookmarkMgr()->at(14)->setData(data);
+    //CBookmark data = mgr->bookmarkMgr()->at(14)->data();
+    //data.setTrash(true);
+    //mgr->bookmarkMgr()->at(14)->setData(data);
+
+    mgr->bookmarkMgr()->removeAt(1);
 }

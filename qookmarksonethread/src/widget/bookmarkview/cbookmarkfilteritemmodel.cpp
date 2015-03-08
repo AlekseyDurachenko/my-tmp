@@ -55,8 +55,12 @@ void CBookmarkFilteredItemModel::setDataModel(CBookmarkFilterDataModel *dataMode
     m_dataModel = dataModel;
     if (m_dataModel)
     {
+        connect(m_dataModel, SIGNAL(aboutToBeInserted(int,int)),
+                this, SLOT(dataModel_aboutToBeInserted(int,int)));
         connect(m_dataModel, SIGNAL(inserted(int,int)),
                 this, SLOT(dataModel_inserted(int,int)));
+        connect(m_dataModel, SIGNAL(aboutToBeRemoved(int,int)),
+                this, SLOT(dataModel_aboutToBeRemoved(int,int)));
         connect(m_dataModel, SIGNAL(removed(int,int)),
                 this, SLOT(dataModel_removed(int,int)));
         connect(m_dataModel, SIGNAL(reseted()),
@@ -246,15 +250,29 @@ int CBookmarkFilteredItemModel::columnCount(const QModelIndex &/*parent*/) const
     return 16;
 }
 
-void CBookmarkFilteredItemModel::dataModel_inserted(int first, int last)
+void CBookmarkFilteredItemModel::dataModel_aboutToBeInserted(int first, int last)
 {
     beginInsertRows(QModelIndex(), first, last);
+}
+
+void CBookmarkFilteredItemModel::dataModel_inserted(int first, int last)
+{
+    Q_UNUSED(first);
+    Q_UNUSED(last);
+
     endInsertRows();
+}
+
+void CBookmarkFilteredItemModel::dataModel_aboutToBeRemoved(int first, int last)
+{
+    beginRemoveRows(QModelIndex(), first, last);
 }
 
 void CBookmarkFilteredItemModel::dataModel_removed(int first, int last)
 {
-    beginRemoveRows(QModelIndex(), first, last);
+    Q_UNUSED(first);
+    Q_UNUSED(last);
+
     endRemoveRows();
 }
 

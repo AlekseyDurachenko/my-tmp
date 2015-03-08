@@ -39,7 +39,9 @@ public:
     inline CBookmarkItem *at(int index) const;
     inline QList<CBookmarkItem *> bookmarks() const;
 signals:
+    void aboutToBeInserted(int first, int last);
     void inserted(int first, int last);
+    void aboutToBeRemoved(int first, int last);
     void removed(int first, int last);
     void dataChanged(int first, int last);
     void reseted();

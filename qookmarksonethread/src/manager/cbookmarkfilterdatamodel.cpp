@@ -18,6 +18,7 @@
 #include "cbookmarkmgr.h"
 #include "cbookmarkitem.h"
 #include "cbookmarkfilter.h"
+#include <QDebug>
 
 
 CBookmarkFilterDataModel::CBookmarkFilterDataModel(CManager *manager,
@@ -49,14 +50,10 @@ void CBookmarkFilterDataModel::setManager(CManager *manager)
     {
         connect(m_manager->bookmarkMgr(), SIGNAL(destroyed()),
                 this, SLOT(bookmarkMgr_destroyed()));
-//        connect(m_bookmarkMgr, SIGNAL(aboutToBeInserted(int,int)),
-//                this, SLOT(bookmarkMgr_aboutToBeInserted(int,int)));
         connect(m_manager->bookmarkMgr(), SIGNAL(inserted(int,int)),
                 this, SLOT(bookmarkMgr_inserted(int,int)));
         connect(m_manager->bookmarkMgr(), SIGNAL(aboutToBeRemoved(int,int)),
                 this, SLOT(bookmarkMgr_aboutToBeRemoved(int,int)));
-//        connect(m_bookmarkMgr, SIGNAL(removed(int,int)),
-//                this, SLOT(bookmarkMgr_removed(int,int)));
         connect(m_manager->bookmarkMgr(), SIGNAL(dataChanged(CBookmarkItem*,CBookmark,CBookmark)),
                 this, SLOT(bookmarkMgr_dataChanged(CBookmarkItem*)));
         connect(m_manager->bookmarkMgr(), SIGNAL(tagsChanged(CBookmarkItem*)),
@@ -116,12 +113,14 @@ void CBookmarkFilterDataModel::invalidate(CBookmarkItem *item,
 void CBookmarkFilterDataModel::insert(CBookmarkItem *item)
 {
     int index = m_bookmarks.count();
+    emit aboutToBeInserted(index, index);
     m_bookmarks.push_back(item);
     emit inserted(index, index);
 }
 
 void CBookmarkFilterDataModel::remove(int index)
 {
+    emit aboutToBeRemoved(index, index);
     m_bookmarks.removeAt(index);
     emit removed(index, index);
 }
@@ -140,13 +139,17 @@ void CBookmarkFilterDataModel::filter_destroyed()
 void CBookmarkFilterDataModel::bookmarkMgr_inserted(int first, int last)
 {
     for (int i = first; i <= last; ++i)
-        remove(indexOf(m_manager->bookmarkMgr()->at(i)));
+        invalidate(m_manager->bookmarkMgr()->at(i));
 }
 
 void CBookmarkFilterDataModel::bookmarkMgr_aboutToBeRemoved(int first, int last)
 {
     for (int i = first; i <= last; ++i)
-        invalidate(m_manager->bookmarkMgr()->at(i));
+    {
+        int index = m_bookmarks.indexOf(m_manager->bookmarkMgr()->at(i));
+        if (index != -1)
+            remove(index);
+    }
 }
 
 void CBookmarkFilterDataModel::bookmarkMgr_dataChanged(CBookmarkItem *item)
