@@ -90,8 +90,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //ui->tag_treeView->setModel(model);
 
     mgr = new CManager(this);
-    dataModel = new CBookmarkFilterDataModel(mgr->bookmarkMgr(), this);
-    filter = new CBookmarkFilter(mgr->tagMgr(), this);
+    dataModel = new CBookmarkFilterDataModel(mgr, this);
+    filter = new CBookmarkFilter(mgr, this);
     dataModel->setFilter(filter);
     CBookmarkFilteredItemModel *model = new CBookmarkFilteredItemModel(dataModel, this);
     ui->treeView_bookmarks->setModel(model);

@@ -13,48 +13,53 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cbookmarkfilterdatamodel.h"
+#include "cmanager.h"
+#include "ctagmgr.h"
 #include "cbookmarkmgr.h"
 #include "cbookmarkitem.h"
 #include "cbookmarkfilter.h"
 
 
-CBookmarkFilterDataModel::CBookmarkFilterDataModel(CBookmarkMgr *bookmarkMgr,
+CBookmarkFilterDataModel::CBookmarkFilterDataModel(CManager *manager,
         QObject *parent) :  QObject(parent)
 {
-    m_bookmarkMgr = 0;
+    m_manager = 0;
     m_filter = 0;
 
-    setBookmarkMgr(bookmarkMgr);
+    setManager(manager);
 }
 
 CBookmarkFilterDataModel::~CBookmarkFilterDataModel()
 {
 }
 
-void CBookmarkFilterDataModel::setBookmarkMgr(CBookmarkMgr *bookmarkMgr)
+void CBookmarkFilterDataModel::setManager(CManager *manager)
 {
-    if (m_bookmarkMgr == bookmarkMgr)
+    if (m_manager == manager)
         return;
 
-    if (m_bookmarkMgr)
-        disconnect(m_bookmarkMgr, 0, this, 0);
-
-    m_bookmarkMgr = bookmarkMgr;
-    if (m_bookmarkMgr)
+    if (m_manager)
     {
-        connect(m_bookmarkMgr, SIGNAL(destroyed()),
+        disconnect(m_manager->tagMgr(), 0, this, 0);
+        disconnect(m_manager->bookmarkMgr(), 0, this, 0);
+    }
+
+    m_manager = manager;
+    if (m_manager)
+    {
+        connect(m_manager->bookmarkMgr(), SIGNAL(destroyed()),
                 this, SLOT(bookmarkMgr_destroyed()));
 //        connect(m_bookmarkMgr, SIGNAL(aboutToBeInserted(int,int)),
 //                this, SLOT(bookmarkMgr_aboutToBeInserted(int,int)));
-        connect(m_bookmarkMgr, SIGNAL(inserted(int,int)),
+        connect(m_manager->bookmarkMgr(), SIGNAL(inserted(int,int)),
                 this, SLOT(bookmarkMgr_inserted(int,int)));
-        connect(m_bookmarkMgr, SIGNAL(aboutToBeRemoved(int,int)),
+        connect(m_manager->bookmarkMgr(), SIGNAL(aboutToBeRemoved(int,int)),
                 this, SLOT(bookmarkMgr_aboutToBeRemoved(int,int)));
 //        connect(m_bookmarkMgr, SIGNAL(removed(int,int)),
 //                this, SLOT(bookmarkMgr_removed(int,int)));
-        connect(m_bookmarkMgr, SIGNAL(dataChanged(CBookmarkItem*,CBookmark,CBookmark)),
+        connect(m_manager->bookmarkMgr(), SIGNAL(dataChanged(CBookmarkItem*,CBookmark,CBookmark)),
                 this, SLOT(bookmarkMgr_dataChanged(CBookmarkItem*)));
-        connect(m_bookmarkMgr, SIGNAL(tagsChanged(CBookmarkItem*)),
+        connect(m_manager->bookmarkMgr(), SIGNAL(tagsChanged(CBookmarkItem*)),
                 this, SLOT(bookmarkMgr_tagsChanged(CBookmarkItem*)));
     }
 
@@ -83,8 +88,8 @@ void CBookmarkFilterDataModel::setFilter(CAbstractBookmarkFilter *filter)
 void CBookmarkFilterDataModel::invalidate()
 {
     m_bookmarks.clear();
-    if (m_bookmarkMgr && m_filter)
-        foreach (CBookmarkItem *item, m_bookmarkMgr->bookmarks())
+    if (m_manager->bookmarkMgr() && m_filter)
+        foreach (CBookmarkItem *item, m_manager->bookmarkMgr()->bookmarks())
             if (m_filter->validate(item))
                 m_bookmarks.push_back(item);
 
@@ -135,13 +140,13 @@ void CBookmarkFilterDataModel::filter_destroyed()
 void CBookmarkFilterDataModel::bookmarkMgr_inserted(int first, int last)
 {
     for (int i = first; i <= last; ++i)
-        remove(indexOf(m_bookmarkMgr->at(i)));
+        remove(indexOf(m_manager->bookmarkMgr()->at(i)));
 }
 
 void CBookmarkFilterDataModel::bookmarkMgr_aboutToBeRemoved(int first, int last)
 {
     for (int i = first; i <= last; ++i)
-        invalidate(m_bookmarkMgr->at(i));
+        invalidate(m_manager->bookmarkMgr()->at(i));
 }
 
 void CBookmarkFilterDataModel::bookmarkMgr_dataChanged(CBookmarkItem *item)
@@ -156,6 +161,6 @@ void CBookmarkFilterDataModel::bookmarkMgr_tagsChanged(CBookmarkItem *item)
 
 void CBookmarkFilterDataModel::bookmarkMgr_destroyed()
 {
-    m_bookmarkMgr = 0;
+    m_manager = 0;
     invalidate();
 }

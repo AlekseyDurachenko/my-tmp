@@ -48,7 +48,10 @@ CNavigationItemModel::~CNavigationItemModel()
 void CNavigationItemModel::setManager(CManager *manager)
 {
     if (m_manager)
-        disconnect(m_manager, 0, this, 0);
+    {
+        disconnect(m_manager->tagMgr(), 0, this, 0);
+        disconnect(m_manager->bookmarkMgr(), 0, this, 0);
+    }
 
     m_manager = manager;
     if (m_manager)

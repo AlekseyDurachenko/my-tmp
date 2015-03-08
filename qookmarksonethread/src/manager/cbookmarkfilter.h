@@ -19,7 +19,7 @@
 #include <QSet>
 #include "cabstractbookmarkfilter.h"
 #include "consts.h"
-class CTagMgr;
+class CManager;
 class CTagItem;
 
 
@@ -27,11 +27,11 @@ class CBookmarkFilter : public CAbstractBookmarkFilter
 {
     Q_OBJECT
 public:
-    CBookmarkFilter(CTagMgr *tagMgr, QObject *parent = 0);
+    CBookmarkFilter(CManager *manager, QObject *parent = 0);
     virtual ~CBookmarkFilter();
 
-    inline CTagMgr *tagMgr() const;
-    void setTagMgr(CTagMgr *tagMgr);
+    inline CManager *manager() const;
+    void setManager(CManager *manager);
 
     inline const QSet<CTagItem *> tags() const;
     void setTags(const QSet<CTagItem *> &tags);
@@ -48,16 +48,16 @@ private slots:
     void tagMgr_aboutToBeRemoved(CTagItem *parent, int first, int last);
     void tagMgr_destroyed();
 private:
-    CTagMgr *m_tagMgr;
+    CManager *m_manager;
     QSet<CTagItem *> m_tags;
     Bookmark::FilterOptions m_inclusiveFilter;
     int m_minRating;
     int m_maxRating;
 };
 
-CTagMgr *CBookmarkFilter::tagMgr() const
+CManager *CBookmarkFilter::manager() const
 {
-    return m_tagMgr;
+    return m_manager;
 }
 
 const QSet<CTagItem *> CBookmarkFilter::tags() const

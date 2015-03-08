@@ -13,44 +13,45 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "cbookmarkfilter.h"
+#include "cmanager.h"
 #include "ctagmgr.h"
+#include "cbookmarkmgr.h"
 #include "ctagitem.h"
 #include "cbookmarkitem.h"
 
 
-CBookmarkFilter::CBookmarkFilter(CTagMgr *tagMgr, QObject *parent) :
+CBookmarkFilter::CBookmarkFilter(CManager *manager, QObject *parent) :
     CAbstractBookmarkFilter(parent)
 {
-    m_tagMgr = 0;
+    m_manager = 0;
     m_inclusiveFilter = ~Bookmark::FilterOptions(Bookmark::Trash);
     m_minRating = Bookmark::MinimumRating;
     m_maxRating = Bookmark::MaximumRating;
 
-    setTagMgr(tagMgr);
+    setManager(manager);
 }
 
 CBookmarkFilter::~CBookmarkFilter()
 {
 }
 
-void CBookmarkFilter::setTagMgr(CTagMgr *tagMgr)
+void CBookmarkFilter::setManager(CManager *manager)
 {
-    if (m_tagMgr == tagMgr)
+    if (m_manager == manager)
         return;
 
-    if (m_tagMgr != 0)
-        disconnect(m_tagMgr, 0, this, 0);
-
-    if (tagMgr == 0)
+    if (m_manager != 0)
     {
-        m_tagMgr = 0;
+        disconnect(m_manager->tagMgr(), 0, this, 0);
+        disconnect(m_manager->bookmarkMgr(), 0, this, 0);
     }
-    else
+
+    m_manager = 0;
+    if (m_manager)
     {
-        m_tagMgr = tagMgr;
-        connect(tagMgr, SIGNAL(destroyed()),
+        connect(m_manager->tagMgr(), SIGNAL(destroyed()),
                 this, SLOT(tagMgr_destroyed()));
-        connect(tagMgr, SIGNAL(aboutToBeRemoved(CTagItem*,int,int)),
+        connect(m_manager->tagMgr(), SIGNAL(aboutToBeRemoved(CTagItem*,int,int)),
                 this, SLOT(tagMgr_aboutToBeRemoved(CTagItem*,int,int)));
     }
 
@@ -76,7 +77,7 @@ void CBookmarkFilter::setRatingRange(int min, int max)
 
 bool CBookmarkFilter::validate(const CBookmarkItem *item) const
 {
-    if (m_tagMgr == 0)
+    if (m_manager == 0)
         return true;
 
 
@@ -127,6 +128,6 @@ void CBookmarkFilter::tagMgr_aboutToBeRemoved(CTagItem *parent,
 
 void CBookmarkFilter::tagMgr_destroyed()
 {
-    m_tagMgr = 0;    
+    m_manager = 0;
     update();
 }
