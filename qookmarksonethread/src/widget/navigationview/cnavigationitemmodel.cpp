@@ -74,6 +74,10 @@ void CNavigationItemModel::setManager(CManager *manager)
                 this, SLOT(tagMgr_bookmarksChanged(CTagItem*)));
         connect(m_manager->bookmarkMgr(), SIGNAL(dataChanged(CBookmarkItem*,CBookmark,CBookmark)),
                 this, SLOT(bookmarkMgr_dataChanged(CBookmarkItem*,CBookmark, CBookmark)));
+        connect(m_manager->bookmarkMgr(), SIGNAL(inserted(int,int)),
+                this, SLOT(bookmarkMgr_inserted()));
+        connect(m_manager->bookmarkMgr(), SIGNAL(removed(int,int)),
+                this, SLOT(bookmarkMgr_removed()));
         connect(m_manager->tagMgr(), SIGNAL(destroyed()),
                 this, SLOT(manager_destroyed()));
     }
@@ -131,12 +135,20 @@ QStringList CNavigationItemModel::mimeTypes() const
 
 QMimeData *CNavigationItemModel::mimeData(const QModelIndexList &indexes) const
 {
+    Q_UNUSED(indexes);
+
     return 0;
 }
 
 bool CNavigationItemModel::dropMimeData(const QMimeData *data,
         Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
+    Q_UNUSED(data);
+    Q_UNUSED(action);
+    Q_UNUSED(row);
+    Q_UNUSED(column);
+    Q_UNUSED(parent);
+
     return false;
 }
 
@@ -334,6 +346,16 @@ void CNavigationItemModel::bookmarkMgr_dataChanged(CBookmarkItem *item,
 
     emit dataChanged(createIndex(0, 0, 0),
                      createIndex(m_topLevelItems.count(), 0, 0));
+}
+
+void CNavigationItemModel::bookmarkMgr_inserted()
+{
+    updateBookmarkRootItem();
+}
+
+void CNavigationItemModel::bookmarkMgr_removed()
+{
+    updateBookmarkRootItem();
 }
 
 void CNavigationItemModel::manager_destroyed()
