@@ -522,4 +522,5 @@ bool CNavigationItemModel::dropMimeBookmarkList(const QMimeData *data,
     stream >> bookmarkUrls;
 
     emit bookmarksNeedTagging(bookmarkUrls, parentTag);
+    return true;
 }
