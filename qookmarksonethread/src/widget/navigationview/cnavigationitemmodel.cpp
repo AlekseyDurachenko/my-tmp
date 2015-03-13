@@ -171,14 +171,14 @@ bool CNavigationItemModel::dropMimeData(const QMimeData *data,
     if (!m_manager)
         return false;
 
-    CTagItem *tagParentItem = static_cast<CTagItem *>(parent.internalPointer());
-    if (!tagParentItem)
+    CTagItem *parentItem = static_cast<CTagItem *>(parent.internalPointer());
+    if (!parentItem)
         return false;
 
     if (data->hasFormat("qookmarks/tag-list"))
-        return dropMimeTagList(data, tagParentItem);
+        return dropMimeTagList(data, parentItem->path());
     else if (data->hasFormat("qookmarks/bookmark-list"))
-        return dropMimeBookmarkList(data, tagParentItem);
+        return dropMimeBookmarkList(data, parentItem->path());
 
     return false;
 }
@@ -502,53 +502,24 @@ void CNavigationItemModel::recalcTopLevelCounters()
 }
 
 bool CNavigationItemModel::dropMimeTagList(const QMimeData *data,
-        CTagItem *tagParentItem)
+        const QStringList &parentTag)
 {
     QByteArray encodedData = data->data("qookmarks/tag-list");
     QDataStream stream(&encodedData, QIODevice::ReadOnly);
     QList<QStringList> tagPaths;
     stream >> tagPaths;
 
-    QList<CTagItem *> tagItems;
-    foreach (const QStringList &tagPath, tagPaths)
-    {
-        CTagItem *tagItem = m_manager->tagMgr()->findByPath(tagPath);
-        if (!tagItem)
-            continue;
-
-        tagItems.push_back(tagItem);
-    }
-
-    if (tagItems.isEmpty())
-        return false;
-
-    emit tagsNeedMoving(tagItems, tagParentItem);
-
+    emit tagsNeedMoving(tagPaths, parentTag);
     return true;
 }
 
 bool CNavigationItemModel::dropMimeBookmarkList(const QMimeData *data,
-        CTagItem *tagParentItem)
+        const QStringList &parentTag)
 {
     QByteArray encodedData = data->data("qookmarks/bookmark-list");
     QDataStream stream(&encodedData, QIODevice::ReadOnly);
     QList<QUrl> bookmarkUrls;
     stream >> bookmarkUrls;
 
-    QList<CBookmarkItem *> bookmarkItems;
-    foreach (const QUrl &url, bookmarkUrls)
-    {
-        CBookmarkItem *bookmarkItem = m_manager->bookmarkMgr()->find(url);
-        if (!bookmarkItem)
-            continue;
-
-        bookmarkItems.push_back(bookmarkItem);
-    }
-
-    if (bookmarkItems.isEmpty())
-        return false;
-
-    emit bookmarksNeedTagging(bookmarkItems, tagParentItem);
-
-    return true;
+    emit bookmarksNeedTagging(bookmarkUrls, parentTag);
 }

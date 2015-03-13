@@ -120,12 +120,10 @@ MainWindow::MainWindow(QWidget *parent) :
     CNavigationItemModel *navItemModel = new CNavigationItemModel(mgr, this);
     ui->treeView_tags->setModel(navItemModel);
 
-    qRegisterMetaType<QList<CTagItem *> >("QList<CTagItem*>");
-    qRegisterMetaType<QList<CBookmarkItem *> >("QList<CBookmarkItem*>");
-    connect(navItemModel, SIGNAL(tagsNeedMoving(QList<CTagItem*>,CTagItem*)),
-            this, SLOT(slot_tagsNeedMoving(QList<CTagItem*>,CTagItem*)));
-    connect(navItemModel, SIGNAL(bookmarksNeedTagging(QList<CBookmarkItem*>,CTagItem*)),
-            this, SLOT(slot_bookmarksNeedTagging(QList<CBookmarkItem*>,CTagItem*)));
+    connect(navItemModel, SIGNAL(tagsNeedMoving(QList<QStringList>,QStringList)),
+            this, SLOT(slot_tagsNeedMoving(QList<QStringList>,QStringList)));
+    connect(navItemModel, SIGNAL(bookmarksNeedTagging(QList<QUrl>,QStringList)),
+            this, SLOT(slot_bookmarksNeedTagging(QList<QUrl>,QStringList)));
 
 }
 
@@ -168,26 +166,56 @@ void MainWindow::on_action_Save_triggered()
     mgr->bookmarkMgr()->removeAt(1);
 }
 
-void MainWindow::slot_tagsNeedMoving(QList<CTagItem *> tags,
-        CTagItem *newParent)
+void MainWindow::slot_tagsNeedMoving(const QList<QStringList> &tags,
+        const QStringList &parentTag)
 {
-    foreach (CTagItem *tag, tags)
+    CTagItem *parentItem = mgr->tagMgr()->findByPath(parentTag);
+    if (!parentItem)
+        return;
+
+    QList<CTagItem *> tagItems;
+    foreach (const QStringList &tagPath, tags)
     {
-        if (tag->aboveOf(newParent))
+        CTagItem *tagItem = mgr->tagMgr()->findByPath(tagPath);
+        if (!tagItem)
+            continue;
+
+        if (tagItem->parent() == parentItem)
+            continue;
+
+        if (tagItem->aboveOf(parentItem))
         {
             QMessageBox::warning(this, tr("Warning"), tr("Can't move parent to child"));
             return;
         }
+
+        tagItems.push_back(tagItem);
     }
 
-    foreach (CTagItem *tag, tags)
-        tag->moveTo(newParent);
+    foreach (CTagItem *tagItem, tagItems)
+        tagItem->moveTo(parentItem);
 }
 
-void MainWindow::slot_bookmarksNeedTagging(QList<CBookmarkItem *> bookmarks,
-        CTagItem *tag)
+void MainWindow::slot_bookmarksNeedTagging(const QList<QUrl> &bookmarks,
+        const QStringList &tag)
 {
 
+    //    QList<CBookmarkItem *> bookmarkItems;
+    //    foreach (const QUrl &url, bookmarkUrls)
+    //    {
+    //        CBookmarkItem *bookmarkItem = m_manager->bookmarkMgr()->find(url);
+    //        if (!bookmarkItem)
+    //            continue;
+
+    //        bookmarkItems.push_back(bookmarkItem);
+    //    }
+
+    //    if (bookmarkItems.isEmpty())
+    //        return false;
+
+    //    emit bookmarksNeedTagging(bookmarkItems, tagParentItem);
+
+    //    return true;
 }
 
 //void MainWindow::dragEnterEvent(QDragEnterEvent *event)
