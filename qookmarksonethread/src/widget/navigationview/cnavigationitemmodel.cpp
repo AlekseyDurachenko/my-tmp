@@ -131,9 +131,6 @@ QStringList CNavigationItemModel::mimeTypes() const
 {
     return QStringList() << "qookmarks/tag-list"
                          << "qookmarks/bookmark-list";
-//                         << "text/uri-list"     // standard uri
-//                         << "text/unicode"      // firefox uri
-//                         << "STRING";           // chromium uri
 }
 
 QMimeData *CNavigationItemModel::mimeData(const QModelIndexList &indexes) const
@@ -150,11 +147,13 @@ QMimeData *CNavigationItemModel::mimeData(const QModelIndexList &indexes) const
         CTagItem *tagItem = static_cast<CTagItem *>(index.internalPointer());
         if (!tagItem)
             continue;
+
         tagPaths.push_back(tagItem->path());
     }
 
     if (tagPaths.isEmpty())
         return 0;
+
     stream << tagPaths;
 
     QMimeData *mimeData = new QMimeData();
