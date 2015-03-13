@@ -49,7 +49,8 @@ public:
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
 signals:
-    void tagNeedMoved(QList<CTagItem *> tags, CTagItem *newParent);
+    void tagsNeedMoving(QList<CTagItem *> tags, CTagItem *newParent);
+    void bookmarksNeedTagging(QList<CBookmarkItem *> bookmarks, CTagItem *tag);
 private slots:
     void tagMgr_aboutToBeInserted(CTagItem *parent ,int first, int last);
     void tagMgr_inserted(CTagItem *parent, int first, int last);

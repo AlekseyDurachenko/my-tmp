@@ -196,9 +196,30 @@ bool CNavigationItemModel::dropMimeData(const QMimeData *data,
         if (tagItems.isEmpty())
             return false;
 
-        emit tagNeedMoved(tagItems, tagPrentItem);
+        emit tagsNeedMoving(tagItems, tagPrentItem);
     }
+    else if (data->hasFormat("qookmarks/bookmark-list"))
+    {
+        QByteArray encodedData = data->data("qookmarks/bookmark-list");
+        QDataStream stream(&encodedData, QIODevice::ReadOnly);
+        QList<QUrl> bookmarkUrls;
+        stream >> bookmarkUrls;
 
+        QList<CBookmarkItem *> bookmarkItems;
+        foreach (const QUrl &url, bookmarkUrls)
+        {
+            CBookmarkItem *bookmarkItem = m_manager->bookmarkMgr()->find(url);
+            if (!bookmarkItem)
+                continue;
+
+            bookmarkItems.push_back(bookmarkItem);
+        }
+
+        if (bookmarkItems.isEmpty())
+            return false;
+
+        emit bookmarksNeedTagging(bookmarkItems, tagPrentItem);
+    }
 
     return false;
 }
