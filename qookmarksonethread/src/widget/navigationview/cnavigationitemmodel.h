@@ -85,6 +85,8 @@ private:
                          const QStringList &parentTag);
     bool dropMimeBookmarkList(const QMimeData *data,
                               const QStringList &parentTag);
+    QList<QStringList> toMimeTagList(const QMimeData *data);
+    QList<QUrl> toMimeBookmarkList(const QMimeData *data);
 private:
     CManager *m_manager;
     QVector<TopLevelItem> m_topLevelItems;
