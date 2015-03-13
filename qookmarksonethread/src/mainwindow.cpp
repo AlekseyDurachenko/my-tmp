@@ -14,6 +14,7 @@
 #include "cbookmarkfilter.h"
 #include "cbookmarkfilteritemmodel.h"
 #include "cnavigationitemmodel.h"
+#include <QMessageBox>
 
 
 void printTagItem(const QString &path, CTagItem *item)
@@ -119,6 +120,13 @@ MainWindow::MainWindow(QWidget *parent) :
     CNavigationItemModel *navItemModel = new CNavigationItemModel(mgr, this);
     ui->treeView_tags->setModel(navItemModel);
 
+    qRegisterMetaType<QList<CTagItem *> >("QList<CTagItem*>");
+    qRegisterMetaType<QList<CBookmarkItem *> >("QList<CBookmarkItem*>");
+    connect(navItemModel, SIGNAL(tagsNeedMoving(QList<CTagItem*>,CTagItem*)),
+            this, SLOT(slot_tagsNeedMoving(QList<CTagItem*>,CTagItem*)));
+    connect(navItemModel, SIGNAL(bookmarksNeedTagging(QList<CBookmarkItem*>,CTagItem*)),
+            this, SLOT(slot_bookmarksNeedTagging(QList<CBookmarkItem*>,CTagItem*)));
+
 }
 
 MainWindow::~MainWindow()
@@ -158,6 +166,28 @@ void MainWindow::on_action_Save_triggered()
     mgr->bookmarkMgr()->at(14)->setData(data);
 
     mgr->bookmarkMgr()->removeAt(1);
+}
+
+void MainWindow::slot_tagsNeedMoving(QList<CTagItem *> tags,
+        CTagItem *newParent)
+{
+    foreach (CTagItem *tag, tags)
+    {
+        if (tag->aboveOf(newParent))
+        {
+            QMessageBox::warning(this, tr("Warning"), tr("Can't move parent to child"));
+            return;
+        }
+    }
+
+    foreach (CTagItem *tag, tags)
+        tag->moveTo(newParent);
+}
+
+void MainWindow::slot_bookmarksNeedTagging(QList<CBookmarkItem *> bookmarks,
+        CTagItem *tag)
+{
+
 }
 
 //void MainWindow::dragEnterEvent(QDragEnterEvent *event)
