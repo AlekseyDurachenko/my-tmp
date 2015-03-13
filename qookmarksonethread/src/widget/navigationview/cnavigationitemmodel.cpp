@@ -504,18 +504,18 @@ void CNavigationItemModel::recalcTopLevelCounters()
 bool CNavigationItemModel::dropMimeTagList(const QMimeData *data,
         const QStringList &parentTag)
 {
-    emit tagsNeedMoving(toMimeTagList(data), parentTag);
+    emit tagsNeedMoving(fromMimeTagList(data), parentTag);
     return true;
 }
 
 bool CNavigationItemModel::dropMimeBookmarkList(const QMimeData *data,
         const QStringList &parentTag)
 {
-    emit bookmarksNeedTagging(toMimeBookmarkList(data), parentTag);
+    emit bookmarksNeedTagging(fromMimeBookmarkList(data), parentTag);
     return true;
 }
 
-QList<QStringList> CNavigationItemModel::toMimeTagList(const QMimeData *data)
+QList<QStringList> CNavigationItemModel::fromMimeTagList(const QMimeData *data)
 {
     QByteArray encodedData = data->data("qookmarks/tag-list");
     QDataStream stream(&encodedData, QIODevice::ReadOnly);
@@ -525,7 +525,7 @@ QList<QStringList> CNavigationItemModel::toMimeTagList(const QMimeData *data)
     return tagPaths;
 }
 
-QList<QUrl> CNavigationItemModel::toMimeBookmarkList(const QMimeData *data)
+QList<QUrl> CNavigationItemModel::fromMimeBookmarkList(const QMimeData *data)
 {
     QByteArray encodedData = data->data("qookmarks/bookmark-list");
     QDataStream stream(&encodedData, QIODevice::ReadOnly);
