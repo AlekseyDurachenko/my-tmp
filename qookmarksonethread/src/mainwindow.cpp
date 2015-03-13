@@ -159,3 +159,8 @@ void MainWindow::on_action_Save_triggered()
 
     mgr->bookmarkMgr()->removeAt(1);
 }
+
+//void MainWindow::dragEnterEvent(QDragEnterEvent *event)
+//{
+//    qDebug() << "ok" << event->format();
+//}

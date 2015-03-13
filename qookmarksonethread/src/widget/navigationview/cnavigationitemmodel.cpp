@@ -129,25 +129,76 @@ Qt::ItemFlags CNavigationItemModel::flags(const QModelIndex &index) const
 
 QStringList CNavigationItemModel::mimeTypes() const
 {
-    return QStringList() << "application/CTagItemList"
-                         << "application/CBookmarkItemList";
+    return QStringList() << "qookmarks/tag-list"
+                         << "qookmarks/bookmark-list";
+//                         << "text/uri-list"     // standard uri
+//                         << "text/unicode"      // firefox uri
+//                         << "STRING";           // chromium uri
 }
 
 QMimeData *CNavigationItemModel::mimeData(const QModelIndexList &indexes) const
 {
-    Q_UNUSED(indexes);
+    QByteArray encodedData;
+    QDataStream stream(&encodedData, QIODevice::WriteOnly);
 
-    return 0;
+    QList<QStringList> tagPaths;
+    foreach (const QModelIndex &index, indexes)
+    {
+        if (!index.isValid())
+            continue;
+
+        CTagItem *tagItem = static_cast<CTagItem *>(index.internalPointer());
+        if (!tagItem)
+            continue;
+        tagPaths.push_back(tagItem->path());
+    }
+
+    if (tagPaths.isEmpty())
+        return 0;
+    stream << tagPaths;
+
+    QMimeData *mimeData = new QMimeData();
+    mimeData->setData("qookmarks/tag-list", encodedData);
+    return mimeData;
 }
 
 bool CNavigationItemModel::dropMimeData(const QMimeData *data,
         Qt::DropAction action, int row, int column, const QModelIndex &parent)
 {
-    Q_UNUSED(data);
     Q_UNUSED(action);
     Q_UNUSED(row);
     Q_UNUSED(column);
-    Q_UNUSED(parent);
+
+    if (!m_manager)
+        return false;
+
+    CTagItem *tagPrentItem = static_cast<CTagItem *>(parent.internalPointer());
+    if (!tagPrentItem)
+        return false;
+
+    if (data->hasFormat("qookmarks/tag-list"))
+    {
+        QByteArray encodedData = data->data("qookmarks/tag-list");
+        QDataStream stream(&encodedData, QIODevice::ReadOnly);
+        QList<QStringList> tagPaths;
+        stream >> tagPaths;
+
+        QList<CTagItem *> tagItems;
+        foreach (const QStringList &tagPath, tagPaths)
+        {
+            CTagItem *tagItem = m_manager->tagMgr()->findByPath(tagPath);
+            if (!tagItem)
+                continue;
+
+            tagItems.push_back(tagItem);
+        }
+
+        if (tagItems.isEmpty())
+            return false;
+
+        emit tagNeedMoved(tagItems, tagPrentItem);
+    }
+
 
     return false;
 }
