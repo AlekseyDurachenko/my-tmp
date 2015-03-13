@@ -172,54 +172,14 @@ bool CNavigationItemModel::dropMimeData(const QMimeData *data,
     if (!m_manager)
         return false;
 
-    CTagItem *tagPrentItem = static_cast<CTagItem *>(parent.internalPointer());
-    if (!tagPrentItem)
+    CTagItem *tagParentItem = static_cast<CTagItem *>(parent.internalPointer());
+    if (!tagParentItem)
         return false;
 
     if (data->hasFormat("qookmarks/tag-list"))
-    {
-        QByteArray encodedData = data->data("qookmarks/tag-list");
-        QDataStream stream(&encodedData, QIODevice::ReadOnly);
-        QList<QStringList> tagPaths;
-        stream >> tagPaths;
-
-        QList<CTagItem *> tagItems;
-        foreach (const QStringList &tagPath, tagPaths)
-        {
-            CTagItem *tagItem = m_manager->tagMgr()->findByPath(tagPath);
-            if (!tagItem)
-                continue;
-
-            tagItems.push_back(tagItem);
-        }
-
-        if (tagItems.isEmpty())
-            return false;
-
-        emit tagsNeedMoving(tagItems, tagPrentItem);
-    }
+        return dropMimeTagList(data, tagParentItem);
     else if (data->hasFormat("qookmarks/bookmark-list"))
-    {
-        QByteArray encodedData = data->data("qookmarks/bookmark-list");
-        QDataStream stream(&encodedData, QIODevice::ReadOnly);
-        QList<QUrl> bookmarkUrls;
-        stream >> bookmarkUrls;
-
-        QList<CBookmarkItem *> bookmarkItems;
-        foreach (const QUrl &url, bookmarkUrls)
-        {
-            CBookmarkItem *bookmarkItem = m_manager->bookmarkMgr()->find(url);
-            if (!bookmarkItem)
-                continue;
-
-            bookmarkItems.push_back(bookmarkItem);
-        }
-
-        if (bookmarkItems.isEmpty())
-            return false;
-
-        emit bookmarksNeedTagging(bookmarkItems, tagPrentItem);
-    }
+        return dropMimeBookmarkList(data, tagParentItem);
 
     return false;
 }
@@ -540,4 +500,56 @@ void CNavigationItemModel::recalcTopLevelCounters()
         if (item->data().isReadLater())
             m_topLevelCounters[ReadLater] += 1;
     }
+}
+
+bool CNavigationItemModel::dropMimeTagList(const QMimeData *data,
+        CTagItem *tagParentItem)
+{
+    QByteArray encodedData = data->data("qookmarks/tag-list");
+    QDataStream stream(&encodedData, QIODevice::ReadOnly);
+    QList<QStringList> tagPaths;
+    stream >> tagPaths;
+
+    QList<CTagItem *> tagItems;
+    foreach (const QStringList &tagPath, tagPaths)
+    {
+        CTagItem *tagItem = m_manager->tagMgr()->findByPath(tagPath);
+        if (!tagItem)
+            continue;
+
+        tagItems.push_back(tagItem);
+    }
+
+    if (tagItems.isEmpty())
+        return false;
+
+    emit tagsNeedMoving(tagItems, tagParentItem);
+
+    return true;
+}
+
+bool CNavigationItemModel::dropMimeBookmarkList(const QMimeData *data,
+        CTagItem *tagParentItem)
+{
+    QByteArray encodedData = data->data("qookmarks/bookmark-list");
+    QDataStream stream(&encodedData, QIODevice::ReadOnly);
+    QList<QUrl> bookmarkUrls;
+    stream >> bookmarkUrls;
+
+    QList<CBookmarkItem *> bookmarkItems;
+    foreach (const QUrl &url, bookmarkUrls)
+    {
+        CBookmarkItem *bookmarkItem = m_manager->bookmarkMgr()->find(url);
+        if (!bookmarkItem)
+            continue;
+
+        bookmarkItems.push_back(bookmarkItem);
+    }
+
+    if (bookmarkItems.isEmpty())
+        return false;
+
+    emit bookmarksNeedTagging(bookmarkItems, tagParentItem);
+
+    return true;
 }

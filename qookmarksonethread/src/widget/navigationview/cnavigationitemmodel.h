@@ -79,6 +79,8 @@ private:
     QString topLevelName(TopLevelItem item) const;
     QIcon topLevelIcon(TopLevelItem item) const;
     void recalcTopLevelCounters();
+    bool dropMimeTagList(const QMimeData *data, CTagItem *tagParentItem);
+    bool dropMimeBookmarkList(const QMimeData *data, CTagItem *tagParentItem);
 private:
     CManager *m_manager;
     QVector<TopLevelItem> m_topLevelItems;
