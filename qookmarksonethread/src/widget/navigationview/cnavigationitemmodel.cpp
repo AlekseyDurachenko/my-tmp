@@ -135,9 +135,6 @@ QStringList CNavigationItemModel::mimeTypes() const
 
 QMimeData *CNavigationItemModel::mimeData(const QModelIndexList &indexes) const
 {
-    QByteArray encodedData;
-    QDataStream stream(&encodedData, QIODevice::WriteOnly);
-
     QList<QStringList> tagPaths;
     foreach (const QModelIndex &index, indexes)
     {
@@ -154,6 +151,8 @@ QMimeData *CNavigationItemModel::mimeData(const QModelIndexList &indexes) const
     if (tagPaths.isEmpty())
         return 0;
 
+    QByteArray encodedData;
+    QDataStream stream(&encodedData, QIODevice::WriteOnly);
     stream << tagPaths;
 
     QMimeData *mimeData = new QMimeData();
@@ -172,13 +171,21 @@ bool CNavigationItemModel::dropMimeData(const QMimeData *data,
         return false;
 
     CTagItem *parentItem = static_cast<CTagItem *>(parent.internalPointer());
-    if (!parentItem)
-        return false;
-
-    if (data->hasFormat("qookmarks/tag-list"))
-        return dropMimeTagList(data, parentItem->path());
-    else if (data->hasFormat("qookmarks/bookmark-list"))
-        return dropMimeBookmarkList(data, parentItem->path());
+    if (parentItem)
+    {
+        if (data->hasFormat("qookmarks/tag-list"))
+            return dropMimeTagList(data, parentItem->path());
+        else if (data->hasFormat("qookmarks/bookmark-list"))
+            return dropMimeBookmarkList(data, parentItem->path());
+    }
+    else
+    {
+//        TopLevelItem type = m_topLevelItems[parent.row()];
+//        if (type == Favorites)
+//        {
+//            emit bookmarksFavoriteMarking(
+//        }
+    }
 
     return false;
 }

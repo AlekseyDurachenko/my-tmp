@@ -15,6 +15,7 @@
 #include "cbookmarkfilteritemmodel.h"
 #include "cnavigationitemmodel.h"
 #include <QMessageBox>
+#include <QPushButton>
 
 
 void printTagItem(const QString &path, CTagItem *item)
@@ -199,6 +200,32 @@ void MainWindow::slot_tagsNeedMoving(const QList<QStringList> &tags,
 void MainWindow::slot_bookmarksNeedTagging(const QList<QUrl> &bookmarks,
         const QStringList &tag)
 {
+    CTagItem *tagItem = mgr->tagMgr()->findByPath(tag);
+    if (!tagItem)
+        return;
+
+    QMessageBox msgBox(QMessageBox::Question, "Action", "What do you want?");
+    QPushButton *moveButton = msgBox.addButton("Move", QMessageBox::ActionRole);
+    QPushButton *copyButton = msgBox.addButton("Copy", QMessageBox::ActionRole);
+    QPushButton *cancelButton = msgBox.addButton(QMessageBox::Cancel);
+
+    if (msgBox.exec() == QMessageBox::Cancel)
+        return;
+
+    foreach (const QUrl &url, bookmarks)
+    {
+        CBookmarkItem *bookmarkItem = mgr->bookmarkMgr()->find(url);
+        if (bookmarkItem)
+        {
+            if (msgBox.clickedButton() == moveButton)
+                foreach (CTagItem *currentTagItem, bookmarkItem->tags())
+                    if (tagItem != currentTagItem)
+                        currentTagItem->bookmarkRemove(bookmarkItem);
+
+            tagItem->bookmarkAdd(bookmarkItem);
+        }
+    }
+
 
     //    QList<CBookmarkItem *> bookmarkItems;
     //    foreach (const QUrl &url, bookmarkUrls)

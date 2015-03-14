@@ -144,23 +144,19 @@ Qt::ItemFlags CBookmarkFilteredItemModel::flags(const QModelIndex &index) const
     return f;
 }
 
-QStringList CBookmarkFilteredItemModel::mimeTypes() const
-{
-    return QStringList() << "application/CBookmarkItemList";
-}
-
 QMimeData *CBookmarkFilteredItemModel::mimeData(const QModelIndexList &indexes) const
 {
-    QMimeData *mimeData = new QMimeData();
+    QList<QUrl> bookmarkUrls;
+    foreach (QModelIndex index, indexes)
+        if (index.isValid() && index.column() == 0)
+            bookmarkUrls << static_cast<CBookmarkItem *>(index.internalPointer())->data().url();
 
     QByteArray encodedData;
     QDataStream stream(&encodedData, QIODevice::WriteOnly);
+    stream << bookmarkUrls;
 
-    foreach (QModelIndex index, indexes)
-        if (index.isValid() && index.column() == 0)
-            stream << static_cast<CBookmarkItem *>(index.internalPointer())->data().url();
-
-    mimeData->setData("application/CBookmarkItemList", encodedData);
+    QMimeData *mimeData = new QMimeData();
+    mimeData->setData("qookmarks/bookmark-list", encodedData);
     return mimeData;
 }
 

@@ -53,6 +53,9 @@ signals:
                         const QStringList &parentTag);
     void bookmarksNeedTagging(const QList<QUrl> &bookmarks,
                               const QStringList& tag);
+    void bookmarksFavoriteMarking(const QList<QUrl> &bookmarks);
+    void bookmarksReadLaterMarking(const QList<QUrl> &bookmarks);
+    void bookmarksTrashMarking(const QList<QUrl> &bookmarks);
 private slots:
     void tagMgr_aboutToBeInserted(CTagItem *parent ,int first, int last);
     void tagMgr_inserted(CTagItem *parent, int first, int last);
