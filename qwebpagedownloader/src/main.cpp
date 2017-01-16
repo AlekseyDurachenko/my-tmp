@@ -16,16 +16,29 @@
 #include <QTextCodec>
 #include "cwebfiledownloader.h"
 #include "cwebpagedownloader.h"
+#include "cwebpagescreenshot.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
     QNetworkAccessManager *network = new QNetworkAccessManager;
+    CWebPageScreenshot screenshot(network);
+    screenshot.setUrl(QUrl("http://sourceforge.net/p/cutycapt/code/HEAD/tree/CutyCapt/CutyCapt.cpp"));
+    screenshot.setScreenshotSize(QSize(1280, 800));
+    screenshot.start();
+    return app.exec();
+
     CWebPageDownloader downloader(network, 0);
+    //downloader.setUrl(app.arguments().at(1));
+    //downloader.setFileName(app.arguments().at(2));
     downloader.setUrl(QUrl("http://habrahabr.ru/post/198142/"));
+    //downloader.setUrl(QUrl("http://www.cse.msu.edu/~chooseun/Test2.pdf"));
+    //downloader.setUrl(QUrl("http://virink.com/post/133968"));
+    //downloader.setUrl(QUrl("http://zhurnal.lib.ru/j/jagun_ewgenij/replikanjachuksinu.shtml"));
     downloader.setFileName("/tmp/img.html");
     downloader.start();
+
     QObject::connect(&downloader, SIGNAL(finished()), &app, SLOT(quit()));
 
     return app.exec();
