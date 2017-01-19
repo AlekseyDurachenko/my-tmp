@@ -1,2 +1,5 @@
 *.pro.user
+study/rust/*/target
+study/rust/*/Cargo.lock
+
 
