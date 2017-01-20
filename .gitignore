@@ -1,5 +1,7 @@
 *.pro.user
 study/rust/*/target
 study/rust/*/Cargo.lock
+study/rust/*/*/target
+study/rust/*/*/Cargo.lock
 
 
