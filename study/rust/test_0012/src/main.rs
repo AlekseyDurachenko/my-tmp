@@ -1,27 +1,34 @@
 enum State {
     Started,
-    Processing {cur: i32, total: i32},
-    Stoped
+    Processing { cur: i32, total: i32 },
+    Stoped,
 }
 
-fn next(state: State) -> State {
+fn next(state: State) -> Option<State> {
     match state {
         State::Started => {
             println!("started");
-            State::Processing { cur: 0, total: 10 }
-        },
-        State::Processing {cur, total } => {
+            Some(State::Processing {
+                cur: 0,
+                total: 10,
+            })
+        }
+
+        State::Processing { cur, total } => {
             println!("processing {} of {}", cur, total);
             if cur < total {
-                State::Processing { cur: cur + 1, total: total }
+                Some(State::Processing {
+                    cur: cur + 1,
+                    total: total,
+                })
+            } else {
+                Some(State::Stoped)
             }
-            else {
-                State::Stoped
-            }
-        },
+        }
+
         State::Stoped => {
             println!("stoped");
-            State::Stoped
+            None
         }
     }
 }
@@ -29,10 +36,9 @@ fn next(state: State) -> State {
 fn main() {
     let mut status = State::Started;
     loop {
-        status = next(status);
-        match status {
-            State::Stoped => break,
-            _ => {}
-        };
+        match next(status) {
+            Some(new_status) => status = new_status,
+            None => break,
+        }
     }
 }
