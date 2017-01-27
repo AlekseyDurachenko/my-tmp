@@ -10,8 +10,19 @@ enum Colors {
     Red = 0x99ff88
 }
 
+static LANGUAGE: &'static str = "Rust";
+const  THRESHOLD: i32 = 10;
+
+fn is_big(n :i32) -> bool {
+    n > THRESHOLD
+}
+
 
 fn main() {
+    let n = 10;
+    println!("{}", LANGUAGE);
+    println!("{}", THRESHOLD);
+    println!("{}", is_big(n));
     println!("{}", Values::One as i32);
     println!("{}", Values::Two as i32);
     println!("{}", Values::Three as i32);

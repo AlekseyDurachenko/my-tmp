@@ -15,7 +15,7 @@ impl List {
     fn len(&self) -> u32 {
         match *self {
             List::Cons(_, ref tail) => 1 + tail.len(),
-            List::Nil => 0
+            List::Nil => 0,
         }
     }
 
@@ -28,14 +28,11 @@ impl List {
 
     fn next(&self) -> List {
         match *self {
-            List::Cons(val, ref tail) => {
-                List::Cons(val, *tail)
-            },
-            List::Nil => List::Nil
+            List::Cons(val, ref tail) => List::Cons(val, *tail),
+            List::Nil => List::Nil,
         }
     }
 }
-
 
 fn main() {
     let mut l1 = List::new();
