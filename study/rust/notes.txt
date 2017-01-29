@@ -1,0 +1,1 @@
+Rust Box() аналогичен std::unique_ptr

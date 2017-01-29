@@ -1,4 +1,6 @@
 #include "mainwindow.h"
+#include "mydrawitem.h"
+#include "mygraphicsitemgroup.h"
 #include "ui_mainwindow.h"
 #include <QGraphicsScene>
 #include <QMediaPlayer>
@@ -16,8 +18,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    setAttribute(Qt::WA_QuitOnClose);
 
     m_scene = new QGraphicsScene(this);
+    m_scene->setBackgroundBrush(Qt::green);
     ui->graphicsView->setScene(m_scene);
 
     m_player_1 = new QMediaPlayer(this);
@@ -45,21 +49,30 @@ MainWindow::MainWindow(QWidget *parent) :
     pixmap_item->setPixmap(QPixmap(QDir::homePath() + "/temp/video/1.jpg"));
     pixmap_item->setPos(0, 0);
     pixmap_item->setScale(0.04);
-    //pixmap_item->setShapeMode(QGraphicsPixmapItem::MaskShape);
+    pixmap_item->setShapeMode(QGraphicsPixmapItem::MaskShape);
     m_scene->addItem(pixmap_item);
 
 
     m_video_item_2 = new MyGraphicsVideoItem;
     m_video_item_2->setPos(QPointF(200, 200));
     m_video_item_2->setSize(QSizeF(300, 150));
+    m_video_item_2->setOpacity(0.8);
     //m_video_item_2->setAspectRatioMode(Qt::IgnoreAspectRatio);
     m_scene->addItem(m_video_item_2);
+
 
     m_player_1->setVideoOutput(m_video_item_1);
     m_player_2->setVideoOutput(m_video_item_2);
 
     m_player_1->play();
     m_player_2->play();
+
+
+    MyDrawItem *rect1 = new MyDrawItem(0);
+    rect1->setBrush(QBrush(Qt::red));
+    rect1->setRect(100, 100, 300, 200);
+    //rect1->setRotation(30);
+    m_scene->addItem(rect1);
 
     QGraphicsSimpleTextItem *text_item = new QGraphicsSimpleTextItem;
     text_item->setText("This is example text");
@@ -68,16 +81,38 @@ MainWindow::MainWindow(QWidget *parent) :
     text_item->setBrush(QBrush(Qt::red));
     m_scene->addItem(text_item);
 
-    QGraphicsView *view1 = new QGraphicsView;
-    view1->setScene(m_scene);
-    view1->setSceneRect(100, 100, 200, 200);
-    view1->resize(220, 220);
-    view1->show();
-    QGraphicsView *view2 = new QGraphicsView;
-    view2->setScene(m_scene);
-    view2->setSceneRect(300, 100, 200, 200);
-    view2->resize(220, 220);
-    view2->show();
+//    QGraphicsView *view1 = new QGraphicsView;
+//    view1->setScene(m_scene);
+//    //view1->setSceneRect(100, 100, 200, 200);
+//    view1->resize(1000, 1000);
+//    view1->fitInView(QRect(0, 0, 200, 200));
+//    view1->show();
+
+//    QGraphicsView *view2 = new QGraphicsView;
+//    view2->setScene(m_scene);
+//    view2->setSceneRect(300, 100, 200, 200);
+//    view2->resize(220, 220);
+//    view2->show();
+
+//    QGraphicsRectItem *rect1 = new QGraphicsRectItem(0);
+//    rect1->setBrush(QBrush(Qt::red));
+//    rect1->setRect(100, 100, 400, 400);
+//    m_scene->addItem(rect1);
+
+//    QGraphicsRectItem *rect2 = new QGraphicsRectItem(0);
+//    rect2->setBrush(QBrush(Qt::green));
+//    rect2->setRect(20, 20, 100, 100);
+//    QGraphicsRectItem *rect3 = new QGraphicsRectItem(0);
+//    rect3->setBrush(QBrush(Qt::blue));
+//    rect3->setRect(80, 80, 80, 80);
+//    //m_scene->addItem(rect2);
+//    //m_scene->addItem(rect3);
+//    MyGraphicsItemGroup *group = new MyGraphicsItemGroup(0);
+//    group->addToGroup(rect2);
+//    group->addToGroup(rect3);
+//    m_scene->addItem(group);
+    //qDebug() << group->boundingRect();
+
 }
 
 MainWindow::~MainWindow()
