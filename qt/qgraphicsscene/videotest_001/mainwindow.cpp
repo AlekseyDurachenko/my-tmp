@@ -79,6 +79,9 @@ MainWindow::MainWindow(QWidget *parent) :
     text_item->setFont(QFont("arial", 30));
     text_item->setPos(300, 100);
     text_item->setBrush(QBrush(Qt::red));
+    text_item->setFlag(QGraphicsItem::ItemIsMovable, true);
+    text_item->setFlag(QGraphicsItem::ItemIsSelectable, true);
+    text_item->setSelected(true);
     m_scene->addItem(text_item);
 
 //    QGraphicsView *view1 = new QGraphicsView;
