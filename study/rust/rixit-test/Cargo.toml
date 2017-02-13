@@ -1,0 +1,9 @@
+[package]
+name = "rixit-test"
+version = "0.1.0"
+authors = ["Aleksey Durachenko <durachenko.aleksey@gmail.com>"]
+
+[dependencies]
+iron = "*"
+rustc-serialize = "*"
+router = "*"
