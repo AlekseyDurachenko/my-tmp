@@ -1,1 +1,1 @@
-const RIXIT_IMG_PATH : &str = "RIXIT_IMG_PATH";
+pub const RIXIT_IMG_PATH : &'static str = "RIXIT_IMG_PATH";
