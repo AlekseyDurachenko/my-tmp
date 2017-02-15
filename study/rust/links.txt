@@ -9,3 +9,6 @@ https://habrahabr.ru/post/319808/
 http://rurust.github.io/rust_book_ru/
 
 https://habrahabr.ru/post/305714/ -- iron
+
+https://aturon.github.io/
+https://github.com/rust-lang-nursery/fmt-rfcs/blob/master/example/lists.rs
