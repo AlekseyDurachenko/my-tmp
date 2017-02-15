@@ -23,15 +23,17 @@ struct Greeting {
 
 
 fn hello(_ : &mut iron::Request) -> iron::IronResult<iron::Response> {
-    println!("hello!");
+    println!("hello!\n");
+    std::thread::sleep(std::time::Duration::from_secs(10));
     Ok(iron::Response::with((iron::status::Ok, "hello!")))
 }
 
 
 fn main() {
-    let y = httprouter::HttpRouter::new();
-    y.add_route("hello", hello);
+    let mut router = httprouter::HttpRouter::new();
+    router.add_route("hello".to_string(), hello);
 
+    iron::Iron::new(router).http("localhost:3000").unwrap();
 
     //println!("{}", url.path().iter().cloned().collect().join("/"));
 
