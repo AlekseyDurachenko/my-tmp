@@ -1,5 +1,3 @@
-extern crate rocket;
-
 use std::env;
 use std::path::PathBuf;
 use rocket::response::NamedFile;
