@@ -12,3 +12,6 @@ https://habrahabr.ru/post/305714/ -- iron
 
 https://aturon.github.io/
 https://github.com/rust-lang-nursery/fmt-rfcs/blob/master/example/lists.rs
+
+
+http://hermanradtke.com/2015/05/03/string-vs-str-in-rust-functions.html
