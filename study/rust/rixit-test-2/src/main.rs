@@ -4,13 +4,8 @@
 extern crate rocket;
 mod consts;
 mod img;
-
-
-#[get("/world")]
-fn world() -> &'static str {
-    "Hello, world!"
-}
+mod api;
 
 fn main() {
-    rocket::ignite().mount("/", routes![world, img::img]).launch();
+    rocket::ignite().mount("/", routes![api::api, img::img]).launch();
 }
